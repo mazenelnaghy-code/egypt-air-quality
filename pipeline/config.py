@@ -22,6 +22,21 @@ WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 # the transform layer de-duplicates. This is what makes reruns safe.
 PAST_DAYS = 2
 
+# Used by `run.py backfill`, which is how you fill a cold start or repair a
+# gap left by the schedule being down for longer than PAST_DAYS. Open-Meteo
+# serves up to 92 past days; 30 covers the dashboard's 14-day window twice
+# over. A backfill is an ordinary extract with a wider window — it lands in
+# the same raw partitions and de-duplicates against what is already there.
+BACKFILL_DAYS = 30
+
+# Observations are stored in UTC because that is what the API is asked for and
+# UTC is the only sane storage choice. But "when is pollution worst?" is a
+# question about people's days, and nobody in Cairo experiences rush hour in
+# UTC. The hourly profile is therefore reported in local time. Naming the IANA
+# zone rather than a fixed offset matters: Egypt observes DST again as of 2023,
+# so the offset is +2 for part of the year and +3 for the rest.
+LOCAL_TIMEZONE = "Africa/Cairo"
+
 AIR_VARS = [
     "pm10",
     "pm2_5",

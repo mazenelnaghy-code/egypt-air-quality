@@ -250,6 +250,28 @@ def test_exports_are_byte_identical_across_rebuilds(sandbox, tmp_path, monkeypat
     assert not differing, f"non-deterministic exports: {differing}"
 
 
+def test_local_hour_follows_egyptian_dst(warehouse):
+    """The hourly profile is reported in local time, so the offset has to come
+    from the IANA zone, not a hardcoded number: Egypt is UTC+3 in summer and
+    UTC+2 in winter since DST returned in 2023."""
+    summer, winter = warehouse.execute(
+        """SELECT
+             EXTRACT(hour FROM (TIMESTAMP '2026-08-29 14:00:00' AT TIME ZONE 'UTC')
+                                AT TIME ZONE getvariable('local_tz')),
+             EXTRACT(hour FROM (TIMESTAMP '2026-01-15 14:00:00' AT TIME ZONE 'UTC')
+                                AT TIME ZONE getvariable('local_tz'))"""
+    ).fetchone()
+    assert (summer, winter) == (17, 16), f"got +{summer - 14}/+{winter - 14}"
+
+
+def test_hourly_profile_covers_the_local_clock(warehouse):
+    """Grouping by local hour must still span 00..23, not lose or invent one."""
+    hours = warehouse.execute(
+        "SELECT DISTINCT hour_of_day_local FROM mart_hourly_profile ORDER BY 1"
+    ).fetchall()
+    assert [h[0] for h in hours] == list(range(24))
+
+
 def test_tests_do_not_touch_real_raw_data(sandbox):
     """Guard the guard: the suite must build from its own directory.
 

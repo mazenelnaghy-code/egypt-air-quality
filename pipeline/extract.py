@@ -74,12 +74,12 @@ def _to_rows(city: dict, payload: dict, variables: list[str], ingested_at: str) 
     return out
 
 
-def fetch_city(city: dict, ingested_at: str) -> list[dict]:
+def fetch_city(city: dict, ingested_at: str, past_days: int = PAST_DAYS) -> list[dict]:
     """Fetch air quality and weather for one city and merge on timestamp."""
     common = {
         "latitude": city["lat"],
         "longitude": city["lon"],
-        "past_days": PAST_DAYS,
+        "past_days": past_days,
         "forecast_days": 1,
         "timezone": "UTC",
     }
@@ -103,8 +103,14 @@ def fetch_city(city: dict, ingested_at: str) -> list[dict]:
     return merged
 
 
-def run() -> int:
+def run(past_days: int = PAST_DAYS) -> int:
     """Fetch every city and append to today's raw partition.
+
+    A backfill is the same call with a wider `past_days`. Partitions are named
+    by ingest date, not observation date, so a backfill writes its whole window
+    into today's file — the transform layer keys on (city, observed_at) and
+    keeps the most recently ingested version, so nothing is duplicated and
+    older readings are refreshed rather than doubled.
 
     Returns the number of rows written.
     """
@@ -117,7 +123,7 @@ def run() -> int:
 
     for city in CITIES:
         try:
-            rows.extend(fetch_city(city, ingested_at))
+            rows.extend(fetch_city(city, ingested_at, past_days))
         except Exception as exc:  # noqa: BLE001
             # One dead city should not sink the whole run.
             log.error("skipping %s: %s", city["city_id"], exc)

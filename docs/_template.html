@@ -82,7 +82,9 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);
   <div class="card"><div class="chart"><canvas id="trend"></canvas></div></div>
 
   <h2>Daily rhythm</h2>
-  <p class="sub">Average PM2.5 by hour of day, pooled across all observations.</p>
+  <p class="sub">Average PM2.5 by hour of day, pooled across all observations,
+  in Egyptian local time — so the peaks line up with when people are actually
+  on the road rather than with UTC.</p>
   <div class="card"><div class="chart"><canvas id="profile"></canvas></div></div>
 
   <h2>Data quality</h2>
@@ -271,7 +273,7 @@ function profileChart(){
   const series = keys.map(key => ({
     label: CELL_LABEL.get(key),
     data: hours.map(h => {
-      const hit = DATA.profile.find(r => cellKey(r) === key && r.hour_of_day === h);
+      const hit = DATA.profile.find(r => cellKey(r) === key && r.hour_of_day_local === h);
       return hit ? hit.avg_pm2_5 : null;
     }),
     borderColor: CELL_COLOR.get(key),
@@ -279,7 +281,8 @@ function profileChart(){
     tension: .35, borderWidth: 2, pointRadius: 0, spanGaps: true
   }));
   const opts = JSON.parse(JSON.stringify(AXIS));
-  opts.scales.x.title = {display:true,text:"Hour of day (UTC)",color:"#5F6B84",font:{size:11}};
+  opts.scales.x.title = {display:true,text:"Hour of day (Cairo local time)",
+                         color:"#5F6B84",font:{size:11}};
   new Chart(document.getElementById("profile"),
     { type:"line", data:{ labels:hours.map(h => String(h).padStart(2,"0")), datasets:series },
       options:opts });

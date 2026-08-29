@@ -13,7 +13,14 @@ from pathlib import Path
 
 import duckdb
 
-from .config import CITIES, RAW_DIR, SQL_DIR, WAREHOUSE, WHO_PM25_GUIDELINE
+from .config import (
+    CITIES,
+    LOCAL_TIMEZONE,
+    RAW_DIR,
+    SQL_DIR,
+    WAREHOUSE,
+    WHO_PM25_GUIDELINE,
+)
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +67,7 @@ def run(
     con.execute(f"SET VARIABLE raw_glob = '{raw_dir.as_posix()}/*.jsonl'")
     con.execute(f"SET VARIABLE cities_json = '{cities_file.as_posix()}'")
     con.execute(f"SET VARIABLE who_pm25 = {WHO_PM25_GUIDELINE}")
+    con.execute(f"SET VARIABLE local_tz = '{LOCAL_TIMEZONE}'")
 
     for model in MODELS:
         sql = (SQL_DIR / model).read_text(encoding="utf-8")

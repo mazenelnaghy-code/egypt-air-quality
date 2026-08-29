@@ -42,6 +42,15 @@ about a second, and it buys idempotency: any run produces exactly the same
 warehouse. A failed or half-finished run is never a problem, and backfilling is
 just another run.
 
+**Stored in UTC, reported in local time.** Storage is UTC because that is the
+only defensible choice for a timestamp. But "when is the air worst?" is a
+question about people's days, and the answer in UTC is off by two or three
+hours, which turns a morning rush hour into an unexplained 4am spike.
+`mart_hourly_profile` therefore groups by local hour, converted through the
+IANA zone `Africa/Cairo` rather than a hardcoded offset — Egypt has observed
+DST again since 2023, so the offset is +2 for part of the year and +3 for the
+rest. Cairo's PM2.5 peak sits at 07:00 local, where it belongs.
+
 **Reproducible means byte-identical, and that takes work.** Two rebuilds of the
 same raw data used to publish different files. Two separate causes: a table has
 no inherent row order, so unordered `COPY` wrote the rows shuffled; and DOUBLE
@@ -143,6 +152,17 @@ python -m pipeline.run test        # transform + quality checks
 python -m pytest tests/ -q         # unit tests, works offline
 ```
 
+A cold start has no history, and the dashboard's 14-day window will be mostly
+empty until the schedule has been running for a fortnight. Fill it in one go:
+
+```bash
+python -m pipeline.run backfill --days 30
+```
+
+That is an ordinary extract with a wider window — same partitions, same
+de-duplication — so it is also the repair for a gap left by the schedule being
+down for longer than `PAST_DAYS`. Open-Meteo serves up to 92 days.
+
 Querying the warehouse directly:
 
 ```bash
@@ -176,7 +196,7 @@ print(df.groupby("city_name").avg_pm2_5.mean().sort_values(ascending=False))
 |---|---|
 | `mart_daily_city.csv` | one row per city per day |
 | `mart_latest_city.csv` | one row per city, most recent observed hour |
-| `mart_hourly_profile.csv` | one row per city per hour-of-day |
+| `mart_hourly_profile.csv` | one row per city per hour-of-day, local time |
 | `dashboard.json` | everything the dashboard renders |
 
 ---
