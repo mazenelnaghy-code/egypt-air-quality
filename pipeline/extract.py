@@ -2,8 +2,9 @@
 
 Design notes
 ------------
-* Raw files are append-only and partitioned by ingest date. They are the
-  source of truth: the warehouse can always be rebuilt from them.
+* Raw files are append-only and partitioned by the date the reading
+  describes, not the date it was fetched. They are the source of truth:
+  the warehouse can always be rebuilt from them.
 * Nothing is cleaned or reshaped here. Extract stores what the API said,
   as close to verbatim as is practical. Cleaning happens downstream, so a
   bug in cleaning never costs us the original data.
@@ -18,6 +19,8 @@ import time
 from datetime import datetime, timezone
 
 import requests
+
+from pathlib import Path
 
 from .config import (
     AIR_QUALITY_URL,
@@ -103,20 +106,48 @@ def fetch_city(city: dict, ingested_at: str, past_days: int = PAST_DAYS) -> list
     return merged
 
 
-def run(past_days: int = PAST_DAYS) -> int:
-    """Fetch every city and append to today's raw partition.
+def _write_partitions(rows: list[dict], raw_dir: Path) -> dict[str, int]:
+    """Append rows to one file per observation date. Returns rows per file.
 
-    A backfill is the same call with a wider `past_days`. Partitions are named
-    by ingest date, not observation date, so a backfill writes its whole window
-    into today's file — the transform layer keys on (city, observed_at) and
-    keeps the most recently ingested version, so nothing is duplicated and
-    older readings are refreshed rather than doubled.
+    Partitioning on the date a reading describes rather than the date it was
+    fetched means a file's name tells you what is inside it, so "what did
+    Cairo look like on the 21st?" is one file rather than a scan of every
+    partition. It also keeps a backfill proportionate: 30 days of history
+    lands as 30 ordinary files instead of one outsized file whose name claims
+    it holds a single day.
+
+    Files stay append-only. A given date is written by every run whose window
+    covers it — about four days' worth — and is never touched again, so
+    partitions become effectively immutable a few days after the fact. The
+    repeated writes are the same overlapping readings the transform layer
+    already de-duplicates on (city_id, observed_at).
+    """
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    by_date: dict[str, list[dict]] = {}
+    for row in rows:
+        # observed_at is "YYYY-MM-DDTHH:MM" as the API returns it, in UTC.
+        by_date.setdefault(row["observed_at"][:10], []).append(row)
+
+    for date, day_rows in sorted(by_date.items()):
+        with (raw_dir / f"{date}.jsonl").open("a", encoding="utf-8") as handle:
+            for row in day_rows:
+                handle.write(json.dumps(row, separators=(",", ":")) + "\n")
+
+    return {date: len(day_rows) for date, day_rows in sorted(by_date.items())}
+
+
+def run(past_days: int = PAST_DAYS) -> int:
+    """Fetch every city and append to the raw partitions it covers.
+
+    A backfill is the same call with a wider `past_days`; it simply touches
+    more partitions. The transform layer keys on (city, observed_at) and keeps
+    the most recently ingested version, so re-fetching a day refreshes it with
+    the model's corrected values rather than duplicating it.
 
     Returns the number of rows written.
     """
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     ingested_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    partition = RAW_DIR / f"{ingested_at[:10]}.jsonl"
 
     rows: list[dict] = []
     failures: list[str] = []
@@ -135,9 +166,8 @@ def run(past_days: int = PAST_DAYS) -> int:
     if failures:
         log.warning("failed cities: %s", ", ".join(failures))
 
-    with partition.open("a", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, separators=(",", ":")) + "\n")
+    written = _write_partitions(rows, RAW_DIR)
 
-    log.info("wrote %s rows to %s", len(rows), partition.name)
+    span = f"{min(written)} .. {max(written)}" if len(written) > 1 else next(iter(written))
+    log.info("wrote %s rows across %s partitions (%s)", len(rows), len(written), span)
     return len(rows)

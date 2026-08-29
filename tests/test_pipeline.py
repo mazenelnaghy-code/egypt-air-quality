@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from pipeline import quality, transform
+from pipeline import extract, quality, transform
 from pipeline.config import CITIES
 
 
@@ -270,6 +270,40 @@ def test_hourly_profile_covers_the_local_clock(warehouse):
         "SELECT DISTINCT hour_of_day_local FROM mart_hourly_profile ORDER BY 1"
     ).fetchall()
     assert [h[0] for h in hours] == list(range(24))
+
+
+def test_rows_land_in_the_partition_for_the_day_they_describe(tmp_path):
+    """A partition's name must describe its contents, not when it was fetched.
+
+    One fetch spans several observation dates -- past_days plus a forecast day
+    -- so a single call has to split across files.
+    """
+    rows = [
+        {"city_id": "cairo", "observed_at": "2026-08-27T23:00", "ingested_at": "x"},
+        {"city_id": "cairo", "observed_at": "2026-08-28T00:00", "ingested_at": "x"},
+        {"city_id": "giza",  "observed_at": "2026-08-28T05:00", "ingested_at": "x"},
+        {"city_id": "cairo", "observed_at": "2026-08-29T12:00", "ingested_at": "x"},
+    ]
+    counts = extract._write_partitions(rows, tmp_path)
+
+    assert counts == {"2026-08-27": 1, "2026-08-28": 2, "2026-08-29": 1}
+    for path in tmp_path.glob("*.jsonl"):
+        day = path.stem
+        for line in path.read_text(encoding="utf-8").splitlines():
+            assert json.loads(line)["observed_at"].startswith(day)
+
+
+def test_partitions_are_append_only(tmp_path):
+    """Re-fetching a day must add to its partition, never truncate it. The
+    overlapping copies are what the staging de-duplication expects."""
+    row = lambda ing: [
+        {"city_id": "cairo", "observed_at": "2026-08-28T00:00", "ingested_at": ing}
+    ]
+    extract._write_partitions(row("first"), tmp_path)
+    extract._write_partitions(row("second"), tmp_path)
+
+    lines = (tmp_path / "2026-08-28.jsonl").read_text(encoding="utf-8").splitlines()
+    assert [json.loads(x)["ingested_at"] for x in lines] == ["first", "second"]
 
 
 def test_tests_do_not_touch_real_raw_data(sandbox):
