@@ -39,8 +39,11 @@ def run(
 
     # Cities live in Python config but need to reach SQL. Writing them to a
     # temp JSON file keeps dim_city defined in SQL like every other model.
+    # aqi_grid is defaulted here rather than in SQL so the column always
+    # exists, even if no city in config declares a shared grid cell.
+    cities = [{"aqi_grid": c["city_id"], **c} for c in CITIES]
     cities_file = raw_dir.parent / "_cities.json"
-    cities_file.write_text(json.dumps(CITIES), encoding="utf-8")
+    cities_file.write_text(json.dumps(cities), encoding="utf-8")
 
     warehouse.parent.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(warehouse))

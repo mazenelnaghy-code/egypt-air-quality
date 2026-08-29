@@ -41,10 +41,18 @@ WEATHER_VARS = [
 # ---------------------------------------------------------------- cities
 # governorate is a real attribute we can group by later, which is what makes
 # dim_city worth having as a dimension rather than a plain text column.
+#
+# `aqi_grid` groups cities that the air quality model cannot tell apart.
+# Open-Meteo serves air quality from CAMS on a roughly 11 km grid, so Cairo
+# and Giza — 4 km apart — resolve to one cell and return byte-identical
+# pollutant values for every hour. Their weather differs, because the weather
+# model is finer, so both cities are worth keeping; what is not legitimate is
+# counting one measurement twice in a cross-city average. Defaults to city_id,
+# meaning "this city is its own cell".
 CITIES = [
-    {"city_id": "cairo",      "name": "Cairo",      "governorate": "Cairo",       "lat": 30.0444, "lon": 31.2357, "population": 9_500_000},
+    {"city_id": "cairo",      "name": "Cairo",      "governorate": "Cairo",       "lat": 30.0444, "lon": 31.2357, "population": 9_500_000, "aqi_grid": "cairo_giza"},
     {"city_id": "alexandria", "name": "Alexandria", "governorate": "Alexandria",  "lat": 31.2001, "lon": 29.9187, "population": 5_400_000},
-    {"city_id": "giza",       "name": "Giza",       "governorate": "Giza",        "lat": 30.0131, "lon": 31.2089, "population": 4_100_000},
+    {"city_id": "giza",       "name": "Giza",       "governorate": "Giza",        "lat": 30.0131, "lon": 31.2089, "population": 4_100_000, "aqi_grid": "cairo_giza"},
     {"city_id": "port_said",  "name": "Port Said",  "governorate": "Port Said",   "lat": 31.2653, "lon": 32.3019, "population": 750_000},
     {"city_id": "suez",       "name": "Suez",       "governorate": "Suez",        "lat": 29.9668, "lon": 32.5498, "population": 750_000},
     {"city_id": "mansoura",   "name": "Mansoura",   "governorate": "Dakahlia",    "lat": 31.0409, "lon": 31.3785, "population": 550_000},
