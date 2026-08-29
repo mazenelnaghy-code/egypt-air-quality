@@ -13,19 +13,20 @@ Design notes
 """
 from __future__ import annotations
 
+import gzip
 import json
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 
 import requests
-
-from pathlib import Path
 
 from .config import (
     AIR_QUALITY_URL,
     AIR_VARS,
     CITIES,
+    KEEP_PLAIN_DAYS,
     PAST_DAYS,
     RAW_DIR,
     WEATHER_URL,
@@ -134,6 +135,72 @@ def _write_partitions(rows: list[dict], raw_dir: Path) -> dict[str, int]:
                 handle.write(json.dumps(row, separators=(",", ":")) + "\n")
 
     return {date: len(day_rows) for date, day_rows in sorted(by_date.items())}
+
+
+def _write_gz(path: Path, text: str) -> None:
+    """Write gzip whose bytes depend only on the content.
+
+    GzipFile stamps a modification time and the name of the file it was opened
+    with into the header. Both would make the output differ between runs that
+    produced identical data — the archive of a finished day would keep churning
+    in git, and the reproducibility the rest of the pipeline goes to some
+    trouble for would stop at the raw layer. Writing through a file object with
+    the timestamp zeroed and the name blank removes both.
+
+    Written to a temporary file and renamed, so an interrupted run cannot leave
+    a half-written archive where a complete partition used to be.
+    """
+    tmp = path.parent / (path.name + ".tmp")
+    with open(tmp, "wb") as raw:
+        with gzip.GzipFile(fileobj=raw, mode="wb", compresslevel=9,
+                           mtime=0, filename="") as handle:
+            handle.write(text.encode("utf-8"))
+    tmp.replace(path)
+
+
+def compact_partitions(
+    raw_dir: Path = RAW_DIR, keep_plain_days: int = KEEP_PLAIN_DAYS
+) -> dict[str, tuple[int, int]]:
+    """Gzip partitions no future run will append to. Returns {date: (before, after)}.
+
+    Safe to run at any time and safe to run twice: it only touches dates that
+    have fallen out of the extract window, and a partition already compressed
+    is left alone. A backfill reaching back into compressed history writes a
+    plain file alongside the archive; the next compaction merges the two rather
+    than letting the day end up split across both.
+    """
+    # keep_plain_days counts the days left uncompressed, today included, so
+    # keep_plain_days=4 leaves today and the three days before it plain.
+    cutoff = datetime.now(timezone.utc).date() - timedelta(days=keep_plain_days - 1)
+    results: dict[str, tuple[int, int]] = {}
+
+    for path in sorted(raw_dir.glob("*.jsonl")):
+        try:
+            day = date.fromisoformat(path.stem)
+        except ValueError:
+            continue                      # not a date-named partition
+        if day >= cutoff:
+            continue                      # still inside the write window
+
+        archive = path.parent / (path.name + ".gz")
+        lines = path.read_text(encoding="utf-8").splitlines()
+        before = path.stat().st_size
+
+        if archive.exists():
+            with gzip.open(archive, "rt", encoding="utf-8") as handle:
+                lines = handle.read().splitlines() + lines
+            before += archive.stat().st_size
+
+        _write_gz(archive, "\n".join(lines) + "\n")
+        path.unlink()
+        results[path.stem] = (before, archive.stat().st_size)
+
+    if results:
+        before = sum(b for b, _ in results.values())
+        after = sum(a for _, a in results.values())
+        log.info("compacted %s partitions, %.0f KB -> %.0f KB (%.1fx)",
+                 len(results), before / 1024, after / 1024, before / max(after, 1))
+    return results
 
 
 def run(past_days: int = PAST_DAYS) -> int:

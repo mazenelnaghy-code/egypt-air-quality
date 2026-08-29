@@ -41,7 +41,11 @@ def run(
     raw_dir = raw_dir or RAW_DIR
     warehouse = warehouse or WAREHOUSE
 
-    if not any(raw_dir.glob("*.jsonl")):
+    # *.jsonl* matches both the plain recent partitions and the .jsonl.gz
+    # archives of closed days. DuckDB infers compression per file from the
+    # extension, so a mixed directory reads as one table and compaction is
+    # invisible to every model downstream.
+    if not any(raw_dir.glob("*.jsonl*")):
         raise RuntimeError(f"no raw data in {raw_dir} - run extract first")
 
     # Cities live in Python config but need to reach SQL. Writing them to a
@@ -64,7 +68,7 @@ def run(
     # warehouse is identical wherever it is built.
     con.execute("SET TimeZone = 'UTC'")
 
-    con.execute(f"SET VARIABLE raw_glob = '{raw_dir.as_posix()}/*.jsonl'")
+    con.execute(f"SET VARIABLE raw_glob = '{raw_dir.as_posix()}/*.jsonl*'")
     con.execute(f"SET VARIABLE cities_json = '{cities_file.as_posix()}'")
     con.execute(f"SET VARIABLE who_pm25 = {WHO_PM25_GUIDELINE}")
     con.execute(f"SET VARIABLE local_tz = '{LOCAL_TIMEZONE}'")

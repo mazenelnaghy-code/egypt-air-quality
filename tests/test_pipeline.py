@@ -306,6 +306,98 @@ def test_partitions_are_append_only(tmp_path):
     assert [json.loads(x)["ingested_at"] for x in lines] == ["first", "second"]
 
 
+def test_compaction_leaves_the_write_window_alone(tmp_path):
+    """Compressing a partition a future run still appends to would mean
+    decompressing and rewriting it on every fetch."""
+    today = datetime.now(timezone.utc).date()
+    for offset in (0, 1, 2, 3, 10):
+        day = today - timedelta(days=offset)
+        (tmp_path / f"{day}.jsonl").write_text(
+            json.dumps({"city_id": "cairo", "observed_at": f"{day}T00:00"}) + "\n",
+            encoding="utf-8")
+
+    extract.compact_partitions(tmp_path, keep_plain_days=3)
+
+    plain = sorted(p.stem for p in tmp_path.glob("*.jsonl"))
+    packed = sorted(p.name.removesuffix(".jsonl.gz") for p in tmp_path.glob("*.jsonl.gz"))
+    assert plain == sorted(str(today - timedelta(days=o)) for o in (0, 1, 2))
+    assert packed == sorted(str(today - timedelta(days=o)) for o in (3, 10))
+
+
+def test_compaction_preserves_every_row(tmp_path):
+    old = datetime.now(timezone.utc).date() - timedelta(days=30)
+    rows = [{"city_id": "cairo", "observed_at": f"{old}T{h:02d}:00", "pm2_5": h}
+            for h in range(24)]
+    (tmp_path / f"{old}.jsonl").write_text(
+        "\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+
+    extract.compact_partitions(tmp_path)
+
+    import gzip
+    with gzip.open(tmp_path / f"{old}.jsonl.gz", "rt", encoding="utf-8") as fh:
+        assert [json.loads(x) for x in fh.read().splitlines()] == rows
+
+
+def test_backfill_into_compressed_history_is_merged_not_split(tmp_path):
+    """A backfill reaching into archived days writes a plain file next to the
+    archive. The next compaction has to fold them together, or that date ends
+    up half in one file and half in the other."""
+    old = datetime.now(timezone.utc).date() - timedelta(days=30)
+    row = lambda ing: json.dumps(
+        {"city_id": "cairo", "observed_at": f"{old}T00:00", "ingested_at": ing})
+
+    (tmp_path / f"{old}.jsonl").write_text(row("first") + "\n", encoding="utf-8")
+    extract.compact_partitions(tmp_path)
+    (tmp_path / f"{old}.jsonl").write_text(row("second") + "\n", encoding="utf-8")
+    extract.compact_partitions(tmp_path)
+
+    import gzip
+    with gzip.open(tmp_path / f"{old}.jsonl.gz", "rt", encoding="utf-8") as fh:
+        ingests = [json.loads(x)["ingested_at"] for x in fh.read().splitlines()]
+    assert ingests == ["first", "second"]
+    assert not list(tmp_path.glob("*.jsonl"))
+
+
+def test_compressed_archives_are_byte_reproducible(tmp_path):
+    """gzip embeds an mtime and filename by default, which would make the
+    archive of a finished day churn in git on every rewrite."""
+    old = datetime.now(timezone.utc).date() - timedelta(days=30)
+    payload = json.dumps({"city_id": "cairo", "observed_at": f"{old}T00:00"}) + "\n"
+
+    made = []
+    for name in ("a", "b"):
+        run_dir = tmp_path / name
+        run_dir.mkdir()
+        (run_dir / f"{old}.jsonl").write_text(payload, encoding="utf-8")
+        extract.compact_partitions(run_dir)
+        made.append((run_dir / f"{old}.jsonl.gz").read_bytes())
+
+    assert made[0] == made[1]
+
+
+def test_warehouse_is_identical_whether_or_not_raw_is_compressed(sandbox, tmp_path):
+    """The whole point: compaction is a storage detail the models never see."""
+    raw_dir, _ = sandbox
+
+    mixed = tmp_path / "mixed"
+    mixed.mkdir()
+    for src in raw_dir.glob("*.jsonl"):
+        (mixed / src.name).write_bytes(src.read_bytes())
+    # force everything old enough to be archived, leaving a mixed directory
+    extract.compact_partitions(mixed, keep_plain_days=1)
+    assert list(mixed.glob("*.jsonl.gz")), "fixture produced nothing to compress"
+
+    def fingerprint(directory, name):
+        con = transform.run(directory, tmp_path / f"{name}.duckdb")
+        out = con.execute(
+            "SELECT * FROM mart_daily_city ORDER BY date_key, city_id"
+        ).fetchall()
+        con.close()
+        return out
+
+    assert fingerprint(mixed, "mixed") == fingerprint(raw_dir, "plain")
+
+
 def test_tests_do_not_touch_real_raw_data(sandbox):
     """Guard the guard: the suite must build from its own directory.
 
