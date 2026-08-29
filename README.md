@@ -4,7 +4,7 @@ An automated data pipeline that collects hourly air quality and weather readings
 for eight Egyptian cities, models them into a star schema, tests the result, and
 republishes a dashboard — every six hours, without a server.
 
-**Live dashboard:** https://USERNAME.github.io/egypt-air-quality/
+**Live dashboard:** https://mazenelnaghy-code.github.io/egypt-air-quality/
 
 ---
 
@@ -20,7 +20,7 @@ Open-Meteo API
  TRANSFORM ─────►  DuckDB warehouse                 staging → dims → facts → marts
       │
       ▼
-   TEST ────────►  9 data quality assertions        failures stop the run
+   TEST ────────►  12 data quality assertions       failures stop the run
       │
       ▼
   PUBLISH ──────►  docs/  (dashboard + CSV exports) served by GitHub Pages
@@ -52,9 +52,35 @@ measurements at one row per city per hour. `dim_city` and `dim_date` hold the
 attributes you group by. This is what makes "weekday vs weekend by governorate"
 a join rather than a rewrite.
 
+**The warehouse is UTC, and says so once.** Extract requests `timezone=UTC`, so
+every timestamp stored is naive UTC. The DuckDB session is pinned to UTC in
+`transform.py` for the same reason: `NOW()::TIMESTAMP` otherwise resolves to
+whatever the machine's clock says, and comparing that against UTC data shifts
+every "has this hour happened yet?" test by the local offset. Built in Egypt
+(UTC+3) that put three hours of forecast into `mart_latest_city` while a UTC CI
+runner saw none of it — the same raw data producing different marts depending on
+where you ran it, which is exactly the property this pipeline claims to have.
+
+**Forecast hours exist and are excluded on purpose.** Extract asks for
+`forecast_days=1`, so the fact table always contains hours that have not
+happened. That is deliberate: it means a reading is already stored before it is
+observed, and the next run overwrites it with the actual value. Marts that
+report observations filter it out. `mart_daily_city` therefore shows today as a
+partial day — `hours_observed` is the honest count, not always 24.
+
+**Two cities can be one measurement.** Air quality comes from CAMS on a roughly
+11 km grid. Cairo and Giza are 4 km apart, so they resolve to a single cell and
+return identical pollutant values for every hour, while their weather differs
+because that model is finer. Both are worth keeping; counting one measurement
+twice in a cross-city average is not. `dim_city.aqi_grid` marks cities that
+share a cell, aggregates group by it, and a quality check fails if two cities
+report identical readings without declaring it.
+
 **Tests fail the build.** A pipeline without tests doesn't break loudly, it
-quietly produces wrong numbers. Nine assertions run against the built warehouse;
-an error-level failure stops the run before the dashboard is published.
+quietly produces wrong numbers. Twelve assertions run against the built
+warehouse; an error-level failure stops the run before the dashboard is
+published. The unit tests build a throwaway warehouse in a temp directory —
+they must never write to `data/raw/`, which CI commits.
 
 ---
 
@@ -86,7 +112,7 @@ DAG framework here because four models in a fixed order don't need one.
 ## Running it locally
 
 ```bash
-git clone https://github.com/USERNAME/egypt-air-quality.git
+git clone https://github.com/mazenelnaghy-code/egypt-air-quality.git
 cd egypt-air-quality
 
 python -m venv .venv
@@ -129,7 +155,7 @@ Every mart is published as CSV at a stable URL. No key, no sign-up.
 ```python
 import pandas as pd
 
-url = ("https://raw.githubusercontent.com/USERNAME/egypt-air-quality/"
+url = ("https://raw.githubusercontent.com/mazenelnaghy-code/egypt-air-quality/"
        "main/docs/data/mart_daily_city.csv")
 
 df = pd.read_csv(url, parse_dates=["date_key"])
@@ -150,6 +176,11 @@ print(df.groupby("city_name").avg_pm2_5.mean().sort_values(ascending=False))
 Add an entry to `CITIES` in `pipeline/config.py` and run the pipeline. The
 dimension table, dashboard, and exports all pick it up automatically — no other
 file needs editing.
+
+If the new city sits within ~11 km of one already listed, the air quality API
+will return the same grid cell for both. The `no undeclared duplicate grid
+cells` check warns when that happens; give the pair a shared `aqi_grid` value so
+cross-city averages count the cell once.
 
 ---
 

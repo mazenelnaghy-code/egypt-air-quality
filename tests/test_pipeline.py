@@ -189,6 +189,34 @@ def test_warehouse_session_is_utc(warehouse):
     assert offset == timedelta(0), f"warehouse clock is {offset} off UTC"
 
 
+def test_every_city_has_an_aqi_grid(warehouse):
+    """Cross-city averages group by aqi_grid, so it can never be null."""
+    missing = warehouse.execute(
+        "SELECT COUNT(*) FROM dim_city WHERE aqi_grid IS NULL"
+    ).fetchone()[0]
+    assert missing == 0
+
+
+def test_cities_sharing_a_grid_cell_are_declared(warehouse):
+    """Any two cities returning identical pollutant readings for every hour
+    are one measurement, and config must say so. This catches a new city
+    being added on top of an existing grid cell."""
+    undeclared = warehouse.execute(
+        """SELECT a.city_id, b.city_id
+           FROM fact_hourly_air_quality a
+           JOIN fact_hourly_air_quality b USING (observed_at)
+           JOIN dim_city ca ON ca.city_id = a.city_id
+           JOIN dim_city cb ON cb.city_id = b.city_id
+           WHERE a.city_id < b.city_id
+             AND ca.aqi_grid <> cb.aqi_grid
+           GROUP BY 1, 2
+           HAVING COUNT(*) = SUM(CASE WHEN a.pm2_5 IS NOT DISTINCT FROM b.pm2_5
+                                       AND a.us_aqi IS NOT DISTINCT FROM b.us_aqi
+                                      THEN 1 ELSE 0 END)"""
+    ).fetchall()
+    assert not undeclared, f"identical readings, separate grids declared: {undeclared}"
+
+
 def test_tests_do_not_touch_real_raw_data(sandbox):
     """Guard the guard: the suite must build from its own directory.
 

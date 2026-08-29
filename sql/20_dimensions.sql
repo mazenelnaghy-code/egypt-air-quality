@@ -11,6 +11,10 @@ SELECT
     CAST(lat         AS DOUBLE)  AS latitude,
     CAST(lon         AS DOUBLE)  AS longitude,
     CAST(population  AS BIGINT)  AS population,
+    -- Cities sharing an aqi_grid share one air quality measurement. Any
+    -- average across cities must group by this, not by city_id, or the
+    -- shared cell is counted once per city that falls inside it.
+    CAST(aqi_grid    AS VARCHAR) AS aqi_grid,
     CASE
         WHEN CAST(population AS BIGINT) >= 4000000 THEN 'mega'
         WHEN CAST(population AS BIGINT) >= 1000000 THEN 'large'

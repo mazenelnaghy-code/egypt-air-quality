@@ -35,6 +35,7 @@ FROM (
         f.city_id,
         c.city_name,
         c.governorate,
+        c.aqi_grid,
         c.latitude,
         c.longitude,
         f.observed_at,

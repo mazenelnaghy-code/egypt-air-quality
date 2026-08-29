@@ -94,6 +94,25 @@ CHECKS = [
         note="A city dropping out is worth knowing about but not worth failing on.",
     ),
     Check(
+        "no undeclared duplicate grid cells",
+        """SELECT COUNT(*) FROM (
+               SELECT a.city_id
+               FROM fact_hourly_air_quality a
+               JOIN fact_hourly_air_quality b USING (observed_at)
+               JOIN dim_city ca ON ca.city_id = a.city_id
+               JOIN dim_city cb ON cb.city_id = b.city_id
+               WHERE a.city_id < b.city_id AND ca.aqi_grid <> cb.aqi_grid
+               GROUP BY a.city_id, b.city_id
+               HAVING COUNT(*) = SUM(CASE WHEN a.pm2_5 IS NOT DISTINCT FROM b.pm2_5
+                                           AND a.us_aqi IS NOT DISTINCT FROM b.us_aqi
+                                          THEN 1 ELSE 0 END)
+           )""",
+        severity="warn",
+        note="Two cities returning identical readings for every hour are one "
+             "measurement. Give them a shared aqi_grid in config so averages "
+             "stop counting it twice.",
+    ),
+    Check(
         "pm2_5 mostly populated",
         """SELECT CASE WHEN
                SUM(CASE WHEN pm2_5 IS NULL THEN 1 ELSE 0 END) * 1.0

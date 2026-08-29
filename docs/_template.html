@@ -70,8 +70,11 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);
   <div class="grid g4" id="kpis"></div>
 
   <h2>Right now</h2>
-  <p class="sub">Most recent observed hour per city, worst first.</p>
+  <p class="sub">Most recent observed hour per city, worst first. Forecast hours
+  are excluded — every value here has actually been modelled for a time that has
+  already passed.</p>
   <div class="card" style="padding:4px 20px"><table id="latest"></table></div>
+  <p class="sub" id="shared-note" style="font-size:12.5px;margin-top:10px"></p>
 
   <h2>Last 14 days</h2>
   <p class="sub">Daily mean PM2.5. The dashed line is the WHO 24-hour guideline of 15 µg/m³.</p>
@@ -103,7 +106,7 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);
 <pre>import pandas as pd
 
 url = ("https://raw.githubusercontent.com/"
-       "USERNAME/egypt-air-quality/main/"
+       "mazenelnaghy-code/egypt-air-quality/main/"
        "docs/data/mart_daily_city.csv")
 
 df = pd.read_csv(url, parse_dates=["date_key"])
@@ -129,14 +132,22 @@ const AQI_COLOR = v =>
 function kpis(){
   const h = DATA.health, latest = DATA.latest.filter(r => r.us_aqi != null);
   const worst = latest[0];
-  const avg = latest.length
-    ? (latest.reduce((s,r) => s + r.us_aqi, 0) / latest.length) : null;
+
+  // Cities inside the same air quality grid cell share one measurement.
+  // Averaging per city would weight that cell by how many of our cities
+  // happen to sit in it, so average over cells instead.
+  const cells = [...new Map(
+    latest.map(r => [r.aqi_grid || r.city_id, r.us_aqi])).values()];
+  const avg = cells.length
+    ? (cells.reduce((s,v) => s + v, 0) / cells.length) : null;
+
   const cards = [
     ["Rows in warehouse", Number(h.fact_rows).toLocaleString(), "one per city per hour"],
     ["Cities tracked", h.cities, "across Egypt"],
     ["Worst right now", worst ? worst.city_name : "—",
       worst ? "AQI " + Math.round(worst.us_aqi) : "no data"],
-    ["Mean AQI", avg == null ? "—" : Math.round(avg), "all cities, latest hour"]
+    ["Mean AQI", avg == null ? "—" : Math.round(avg),
+      cells.length + " grid cells, latest hour"]
   ];
   document.getElementById("kpis").innerHTML = cards.map(([l,v,n]) => `
     <div class="card">
@@ -147,9 +158,26 @@ function kpis(){
 }
 
 function latestTable(){
+  // Flag cities that share an air quality grid cell with another city, so a
+  // reader does not mistake two identical rows for independent confirmation.
+  const perCell = {};
+  DATA.latest.forEach(r => {
+    const k = r.aqi_grid || r.city_id;
+    perCell[k] = (perCell[k] || 0) + 1;
+  });
+  const shared = DATA.latest.filter(r => perCell[r.aqi_grid || r.city_id] > 1);
+  document.getElementById("shared-note").innerHTML = shared.length
+    ? `<span style="color:var(--amber)">†</span> ${
+        shared.map(r => r.city_name).join(" and ")} sit inside one
+       ~11 km air quality grid cell, so their pollutant readings are the same
+       measurement. Their weather is modelled separately. Cross-city averages
+       on this page count that cell once.`
+    : "";
+
   const rows = DATA.latest.map(r => `
     <tr>
-      <td>${r.city_name}</td>
+      <td>${r.city_name}${perCell[r.aqi_grid || r.city_id] > 1
+            ? '<span style="color:var(--amber)"> †</span>' : ''}</td>
       <td class="mono">${r.pm2_5 == null ? "—" : r.pm2_5.toFixed(1)}</td>
       <td class="mono">${r.us_aqi == null ? "—" : Math.round(r.us_aqi)}</td>
       <td><span class="pill" style="color:${AQI_COLOR(r.us_aqi)}">${r.aqi_category || "unknown"}</span></td>
