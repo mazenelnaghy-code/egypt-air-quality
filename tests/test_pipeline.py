@@ -217,6 +217,39 @@ def test_cities_sharing_a_grid_cell_are_declared(warehouse):
     assert not undeclared, f"identical readings, separate grids declared: {undeclared}"
 
 
+def test_exports_are_byte_identical_across_rebuilds(sandbox, tmp_path, monkeypatch):
+    """Same raw data must publish the same bytes.
+
+    Tables have no inherent row order and DuckDB aggregates in parallel, so
+    unordered exports came out shuffled on every build. CI then committed a
+    diff of pure reordering every six hours, and the dashboard, which derived
+    its series colours from row order, repainted every city a new colour.
+    """
+    import hashlib
+
+    from pipeline import publish
+
+    def build_once(out_dir):
+        out_dir.mkdir(parents=True, exist_ok=True)
+        monkeypatch.setattr(publish, "EXPORT_DIR", out_dir)
+        con = transform.run(*sandbox)
+        publish._export_tables(con)
+        con.close()
+        return {
+            p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(out_dir.glob("*.csv"))
+        }
+
+    first = build_once(tmp_path / "a")
+    second = build_once(tmp_path / "b")
+
+    # built_at is a genuine clock reading, so that one table may legitimately
+    # differ; everything derived purely from the raw data must not.
+    stable = {k: v for k, v in first.items() if k != "mart_pipeline_health.csv"}
+    differing = [k for k, v in stable.items() if second[k] != v]
+    assert not differing, f"non-deterministic exports: {differing}"
+
+
 def test_tests_do_not_touch_real_raw_data(sandbox):
     """Guard the guard: the suite must build from its own directory.
 

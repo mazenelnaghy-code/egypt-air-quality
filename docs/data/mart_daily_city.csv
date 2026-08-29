@@ -1,25 +1,25 @@
-city_id,city_name,governorate,date_key,hours_observed,avg_pm2_5,max_pm2_5,avg_pm10,avg_us_aqi,max_us_aqi,avg_temp_c,avg_wind_kmh,hours_above_who
-alexandria,Alexandria,Alexandria,2026-08-28,24,17.28,19.5,35.26,64.1,66.0,28.8,12.3,22
-port_said,Port Said,Port Said,2026-08-28,24,21.92,28.9,34.87,73.6,92.0,29.0,10.0,24
-port_said,Port Said,Port Said,2026-08-29,15,16.31,23.7,31.03,71.5,75.0,29.4,21.5,8
-luxor,Luxor,Luxor,2026-08-28,24,54.65,83.6,239.31,152.0,153.0,35.6,9.4,24
-alexandria,Alexandria,Alexandria,2026-08-29,15,11.76,13.6,31.07,63.3,66.0,29.0,17.3,0
-luxor,Luxor,Luxor,2026-08-29,15,47.65,74.3,207.07,146.7,149.0,35.2,8.2,15
-alexandria,Alexandria,Alexandria,2026-08-27,24,15.36,17.9,30.63,59.8,62.0,28.5,10.6,14
-port_said,Port Said,Port Said,2026-08-27,24,17.17,24.0,28.97,71.3,95.0,28.6,9.6,15
-luxor,Luxor,Luxor,2026-08-27,24,59.45,101.0,230.33,147.4,154.0,36.6,9.4,24
-mansoura,Mansoura,Dakahlia,2026-08-27,24,13.31,16.4,23.03,58.8,61.0,29.1,6.8,5
-cairo,Cairo,Cairo,2026-08-27,24,19.1,26.5,29.93,73.0,93.0,31.0,7.0,19
-suez,Suez,Suez,2026-08-27,24,15.8,23.2,21.52,76.8,110.0,31.9,13.0,9
-giza,Giza,Giza,2026-08-28,24,23.27,35.7,40.03,73.8,77.0,30.7,7.8,20
-giza,Giza,Giza,2026-08-29,15,17.57,23.6,37.67,72.9,77.0,30.3,9.3,10
-aswan,Aswan,Aswan,2026-08-27,24,63.52,96.6,251.12,143.0,155.0,36.5,12.4,24
-cairo,Cairo,Cairo,2026-08-28,24,23.27,35.7,40.03,73.8,77.0,30.9,7.1,20
-cairo,Cairo,Cairo,2026-08-29,15,17.57,23.6,37.67,72.9,77.0,30.5,9.1,10
-suez,Suez,Suez,2026-08-28,24,17.36,23.4,23.12,75.8,113.0,32.0,11.1,20
-suez,Suez,Suez,2026-08-29,15,24.59,33.6,51.95,72.8,97.0,31.7,10.7,15
-mansoura,Mansoura,Dakahlia,2026-08-28,24,21.35,28.2,34.51,70.0,95.0,29.6,7.6,24
-mansoura,Mansoura,Dakahlia,2026-08-29,15,14.87,25.3,27.53,71.3,74.0,29.7,14.5,6
-giza,Giza,Giza,2026-08-27,24,19.1,26.5,29.93,73.0,93.0,30.9,7.9,19
-aswan,Aswan,Aswan,2026-08-28,24,41.95,70.3,197.1,142.5,156.0,36.2,13.0,24
-aswan,Aswan,Aswan,2026-08-29,15,39.07,51.0,180.43,113.2,121.0,35.9,13.1,15
+city_id,city_name,governorate,aqi_grid,date_key,hours_observed,avg_pm2_5,max_pm2_5,avg_pm10,avg_us_aqi,max_us_aqi,avg_temp_c,avg_wind_kmh,hours_above_who
+alexandria,Alexandria,Alexandria,alexandria,2026-08-27,24,15.36,17.9,30.63,59.8,62.0,28.5,10.6,14
+aswan,Aswan,Aswan,aswan,2026-08-27,24,63.52,96.6,251.12,143.0,155.0,36.5,12.4,24
+cairo,Cairo,Cairo,cairo_giza,2026-08-27,24,19.1,26.5,29.93,73.0,93.0,31.0,7.0,19
+giza,Giza,Giza,cairo_giza,2026-08-27,24,19.1,26.5,29.93,73.0,93.0,30.9,7.9,19
+luxor,Luxor,Luxor,luxor,2026-08-27,24,59.45,101.0,230.33,147.4,154.0,36.6,9.4,24
+mansoura,Mansoura,Dakahlia,mansoura,2026-08-27,24,13.31,16.4,23.03,58.8,61.0,29.1,6.8,5
+port_said,Port Said,Port Said,port_said,2026-08-27,24,17.17,24.0,28.97,71.3,95.0,28.6,9.6,15
+suez,Suez,Suez,suez,2026-08-27,24,15.8,23.2,21.52,76.8,110.0,31.9,13.0,9
+alexandria,Alexandria,Alexandria,alexandria,2026-08-28,24,17.28,19.5,35.26,64.1,66.0,28.8,12.3,22
+aswan,Aswan,Aswan,aswan,2026-08-28,24,41.95,70.3,197.1,142.5,156.0,36.2,13.0,24
+cairo,Cairo,Cairo,cairo_giza,2026-08-28,24,23.27,35.7,40.03,73.8,77.0,30.9,7.1,20
+giza,Giza,Giza,cairo_giza,2026-08-28,24,23.27,35.7,40.03,73.8,77.0,30.7,7.8,20
+luxor,Luxor,Luxor,luxor,2026-08-28,24,54.65,83.6,239.31,152.0,153.0,35.6,9.4,24
+mansoura,Mansoura,Dakahlia,mansoura,2026-08-28,24,21.35,28.2,34.51,70.0,95.0,29.6,7.6,24
+port_said,Port Said,Port Said,port_said,2026-08-28,24,21.92,28.9,34.87,73.6,92.0,29.0,10.0,24
+suez,Suez,Suez,suez,2026-08-28,24,17.36,23.4,23.12,75.8,113.0,32.0,11.1,20
+alexandria,Alexandria,Alexandria,alexandria,2026-08-29,15,11.76,13.6,31.07,63.3,66.0,29.0,17.3,0
+aswan,Aswan,Aswan,aswan,2026-08-29,15,39.07,51.0,180.43,113.2,121.0,35.9,13.1,15
+cairo,Cairo,Cairo,cairo_giza,2026-08-29,15,17.57,23.6,37.67,72.9,77.0,30.5,9.1,10
+giza,Giza,Giza,cairo_giza,2026-08-29,15,17.57,23.6,37.67,72.9,77.0,30.3,9.3,10
+luxor,Luxor,Luxor,luxor,2026-08-29,15,47.65,74.3,207.07,146.7,149.0,35.2,8.2,15
+mansoura,Mansoura,Dakahlia,mansoura,2026-08-29,15,14.87,25.3,27.53,71.3,74.0,29.7,14.5,6
+port_said,Port Said,Port Said,port_said,2026-08-29,15,16.31,23.7,31.03,71.5,75.0,29.4,21.5,8
+suez,Suez,Suez,suez,2026-08-29,15,24.59,33.6,51.95,72.8,97.0,31.7,10.7,15
