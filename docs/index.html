@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Egypt Air Quality Warehouse</title>
+<meta name="description" content="An automated data pipeline tracking air quality and weather across eight Egyptian cities.">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#14213D; --amber:#FFC42E; --bg:#0A1120; --card:#101B33;
+  --line:#22304F; --ink:#F4F4F2; --mut:#8D99B0; --dim:#5F6B84;
+  --ok:#3FB68B; --warn:#FFC42E; --bad:#E5484D;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --disp:"Barlow Condensed",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+     font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(20px,3vw,44px)}
+h1{font-family:var(--disp);font-size:clamp(34px,5vw,52px);font-weight:700;
+   line-height:1;margin:0 0 10px}
+h2{font-family:var(--disp);font-size:26px;font-weight:600;margin:44px 0 4px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+         text-transform:uppercase;color:var(--amber);margin:0 0 8px}
+.sub{color:var(--mut);max-width:60ch;margin:0 0 6px}
+.rule{width:52px;height:3px;background:var(--amber);margin:10px 0 22px}
+.card{background:var(--card);border:1px solid var(--line);padding:20px}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.kpi-l{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+       text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.kpi-v{font-family:var(--disp);font-size:40px;font-weight:700;line-height:1}
+.kpi-n{font-size:12.5px;color:var(--mut);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+   color:var(--dim);text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.pill{font-family:var(--mono);font-size:10.5px;padding:3px 9px;
+      border:1px solid currentColor;white-space:nowrap}
+.chart{position:relative;height:300px}
+.check{display:flex;gap:11px;align-items:flex-start;padding:9px 0;
+       border-bottom:1px solid var(--line);font-size:13.5px}
+.check:last-child{border-bottom:0}
+.dot{flex:0 0 8px;height:8px;margin-top:7px;border-radius:50%}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:12.5px;background:#0D1729;
+     border:1px solid var(--line);padding:2px 6px}
+pre{background:#0D1729;border:1px solid var(--line);padding:14px;
+    overflow-x:auto;font-family:var(--mono);font-size:12.5px;color:var(--mut)}
+a{color:var(--amber)}
+footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);
+       font-family:var(--mono);font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Automated data pipeline</p>
+  <h1>Egypt Air Quality Warehouse</h1>
+  <p class="sub">Hourly air quality and weather for eight Egyptian cities, extracted from
+  Open-Meteo, modelled into a star schema, tested, and republished automatically by
+  GitHub Actions. No servers, no manual steps.</p>
+  <div class="rule"></div>
+
+  <div class="grid g4" id="kpis"></div>
+
+  <h2>Right now</h2>
+  <p class="sub">Most recent observed hour per city, worst first.</p>
+  <div class="card" style="padding:4px 20px"><table id="latest"></table></div>
+
+  <h2>Last 14 days</h2>
+  <p class="sub">Daily mean PM2.5. The dashed line is the WHO 24-hour guideline of 15 µg/m³.</p>
+  <div class="card"><div class="chart"><canvas id="trend"></canvas></div></div>
+
+  <h2>Daily rhythm</h2>
+  <p class="sub">Average PM2.5 by hour of day, pooled across all observations.</p>
+  <div class="card"><div class="chart"><canvas id="profile"></canvas></div></div>
+
+  <h2>Data quality</h2>
+  <p class="sub">Assertions run against the warehouse on every build. An error-level
+  failure stops the pipeline, so this dashboard is never built from bad data.</p>
+  <div class="card" id="checks"></div>
+
+  <h2>Use the data</h2>
+  <p class="sub">Everything is published as CSV at stable URLs. No key, no sign-up.</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="kpi-l">Files</div>
+      <p style="margin:0;font-size:13.5px;line-height:2">
+        <a href="data/mart_daily_city.csv">mart_daily_city.csv</a><br>
+        <a href="data/mart_latest_city.csv">mart_latest_city.csv</a><br>
+        <a href="data/mart_hourly_profile.csv">mart_hourly_profile.csv</a><br>
+        <a href="data/dashboard.json">dashboard.json</a>
+      </p>
+    </div>
+    <div class="card">
+      <div class="kpi-l">Load it in pandas</div>
+<pre>import pandas as pd
+
+url = ("https://raw.githubusercontent.com/"
+       "USERNAME/egypt-air-quality/main/"
+       "docs/data/mart_daily_city.csv")
+
+df = pd.read_csv(url, parse_dates=["date_key"])
+print(df.groupby("city_name").avg_pm2_5.mean())</pre>
+    </div>
+  </div>
+
+  <footer>
+    Built <span class="mono" id="built"></span> ·
+    Weather and air quality data by Open-Meteo.com, CC BY 4.0 ·
+    Pipeline by Mazen Elnaghy
+  </footer>
+</div>
+
+<script>
+const DATA = {"generated_at":"2026-08-29T14:16:27+00:00","latest":[{"city_id":"luxor","city_name":"Luxor","governorate":"Luxor","latitude":25.6872,"longitude":32.6396,"observed_at":"2026-08-29T14:00:00","pm2_5":35.3,"pm10":195.6,"us_aqi":148.0,"aqi_category":"Unhealthy for sensitive groups","temperature_c":41.0,"humidity_pct":14.0,"wind_speed_kmh":17.9},{"city_id":"aswan","city_name":"Aswan","governorate":"Aswan","latitude":24.0889,"longitude":32.8998,"observed_at":"2026-08-29T14:00:00","pm2_5":27.2,"pm10":155.1,"us_aqi":107.0,"aqi_category":"Unhealthy for sensitive groups","temperature_c":41.7,"humidity_pct":11.0,"wind_speed_kmh":18.9},{"city_id":"suez","city_name":"Suez","governorate":"Suez","latitude":29.9668,"longitude":32.5498,"observed_at":"2026-08-29T14:00:00","pm2_5":23.6,"pm10":77.8,"us_aqi":97.0,"aqi_category":"Moderate","temperature_c":37.4,"humidity_pct":27.0,"wind_speed_kmh":18.3},{"city_id":"cairo","city_name":"Cairo","governorate":"Cairo","latitude":30.0444,"longitude":31.2357,"observed_at":"2026-08-29T14:00:00","pm2_5":10.1,"pm10":26.6,"us_aqi":67.0,"aqi_category":"Moderate","temperature_c":36.0,"humidity_pct":23.0,"wind_speed_kmh":15.8},{"city_id":"giza","city_name":"Giza","governorate":"Giza","latitude":30.0131,"longitude":31.2089,"observed_at":"2026-08-29T14:00:00","pm2_5":10.1,"pm10":26.6,"us_aqi":67.0,"aqi_category":"Moderate","temperature_c":35.9,"humidity_pct":21.0,"wind_speed_kmh":17.4},{"city_id":"port_said","city_name":"Port Said","governorate":"Port Said","latitude":31.2653,"longitude":32.3019,"observed_at":"2026-08-29T14:00:00","pm2_5":10.0,"pm10":29.1,"us_aqi":65.0,"aqi_category":"Moderate","temperature_c":30.2,"humidity_pct":55.0,"wind_speed_kmh":31.1},{"city_id":"mansoura","city_name":"Mansoura","governorate":"Dakahlia","latitude":31.0409,"longitude":31.3785,"observed_at":"2026-08-29T14:00:00","pm2_5":7.8,"pm10":17.9,"us_aqi":65.0,"aqi_category":"Moderate","temperature_c":31.6,"humidity_pct":43.0,"wind_speed_kmh":20.4},{"city_id":"alexandria","city_name":"Alexandria","governorate":"Alexandria","latitude":31.2001,"longitude":29.9187,"observed_at":"2026-08-29T14:00:00","pm2_5":10.9,"pm10":30.3,"us_aqi":60.0,"aqi_category":"Moderate","temperature_c":28.7,"humidity_pct":59.0,"wind_speed_kmh":20.4}],"daily":[{"city_name":"Alexandria","date_key":"2026-08-27","avg_pm2_5":15.36,"avg_us_aqi":59.8},{"city_name":"Suez","date_key":"2026-08-27","avg_pm2_5":15.8,"avg_us_aqi":76.8},{"city_name":"Luxor","date_key":"2026-08-27","avg_pm2_5":59.45,"avg_us_aqi":147.4},{"city_name":"Port Said","date_key":"2026-08-27","avg_pm2_5":17.17,"avg_us_aqi":71.3},{"city_name":"Giza","date_key":"2026-08-27","avg_pm2_5":19.1,"avg_us_aqi":73.0},{"city_name":"Cairo","date_key":"2026-08-27","avg_pm2_5":19.1,"avg_us_aqi":73.0},{"city_name":"Aswan","date_key":"2026-08-27","avg_pm2_5":63.52,"avg_us_aqi":143.0},{"city_name":"Mansoura","date_key":"2026-08-27","avg_pm2_5":13.31,"avg_us_aqi":58.8},{"city_name":"Alexandria","date_key":"2026-08-28","avg_pm2_5":17.28,"avg_us_aqi":64.1},{"city_name":"Suez","date_key":"2026-08-28","avg_pm2_5":17.36,"avg_us_aqi":75.8},{"city_name":"Port Said","date_key":"2026-08-28","avg_pm2_5":21.92,"avg_us_aqi":73.6},{"city_name":"Luxor","date_key":"2026-08-28","avg_pm2_5":54.65,"avg_us_aqi":152.0},{"city_name":"Cairo","date_key":"2026-08-28","avg_pm2_5":23.27,"avg_us_aqi":73.8},{"city_name":"Mansoura","date_key":"2026-08-28","avg_pm2_5":21.35,"avg_us_aqi":70.0},{"city_name":"Aswan","date_key":"2026-08-28","avg_pm2_5":41.95,"avg_us_aqi":142.5},{"city_name":"Giza","date_key":"2026-08-28","avg_pm2_5":23.27,"avg_us_aqi":73.8},{"city_name":"Aswan","date_key":"2026-08-29","avg_pm2_5":39.07,"avg_us_aqi":113.2},{"city_name":"Giza","date_key":"2026-08-29","avg_pm2_5":17.57,"avg_us_aqi":72.9},{"city_name":"Luxor","date_key":"2026-08-29","avg_pm2_5":47.65,"avg_us_aqi":146.7},{"city_name":"Mansoura","date_key":"2026-08-29","avg_pm2_5":14.87,"avg_us_aqi":71.3},{"city_name":"Port Said","date_key":"2026-08-29","avg_pm2_5":16.31,"avg_us_aqi":71.5},{"city_name":"Cairo","date_key":"2026-08-29","avg_pm2_5":17.57,"avg_us_aqi":72.9},{"city_name":"Alexandria","date_key":"2026-08-29","avg_pm2_5":11.76,"avg_us_aqi":63.3},{"city_name":"Suez","date_key":"2026-08-29","avg_pm2_5":24.59,"avg_us_aqi":72.8}],"profile":[{"city_name":"Alexandria","hour_of_day":0,"avg_pm2_5":13.87},{"city_name":"Alexandria","hour_of_day":1,"avg_pm2_5":14.07},{"city_name":"Alexandria","hour_of_day":2,"avg_pm2_5":13.67},{"city_name":"Alexandria","hour_of_day":3,"avg_pm2_5":13.73},{"city_name":"Alexandria","hour_of_day":4,"avg_pm2_5":13.67},{"city_name":"Alexandria","hour_of_day":5,"avg_pm2_5":13.77},{"city_name":"Alexandria","hour_of_day":6,"avg_pm2_5":14.07},{"city_name":"Alexandria","hour_of_day":7,"avg_pm2_5":14.47},{"city_name":"Alexandria","hour_of_day":8,"avg_pm2_5":15.0},{"city_name":"Alexandria","hour_of_day":9,"avg_pm2_5":14.97},{"city_name":"Alexandria","hour_of_day":10,"avg_pm2_5":14.57},{"city_name":"Alexandria","hour_of_day":11,"avg_pm2_5":15.4},{"city_name":"Alexandria","hour_of_day":12,"avg_pm2_5":16.1},{"city_name":"Alexandria","hour_of_day":13,"avg_pm2_5":16.33},{"city_name":"Alexandria","hour_of_day":14,"avg_pm2_5":15.77},{"city_name":"Alexandria","hour_of_day":15,"avg_pm2_5":18.25},{"city_name":"Alexandria","hour_of_day":16,"avg_pm2_5":18.05},{"city_name":"Alexandria","hour_of_day":17,"avg_pm2_5":17.8},{"city_name":"Alexandria","hour_of_day":18,"avg_pm2_5":17.25},{"city_name":"Alexandria","hour_of_day":19,"avg_pm2_5":17.25},{"city_name":"Alexandria","hour_of_day":20,"avg_pm2_5":17.05},{"city_name":"Alexandria","hour_of_day":21,"avg_pm2_5":16.0},{"city_name":"Alexandria","hour_of_day":22,"avg_pm2_5":14.8},{"city_name":"Alexandria","hour_of_day":23,"avg_pm2_5":14.3},{"city_name":"Aswan","hour_of_day":0,"avg_pm2_5":61.73},{"city_name":"Aswan","hour_of_day":1,"avg_pm2_5":67.77},{"city_name":"Aswan","hour_of_day":2,"avg_pm2_5":70.27},{"city_name":"Aswan","hour_of_day":3,"avg_pm2_5":70.47},{"city_name":"Aswan","hour_of_day":4,"avg_pm2_5":69.5},{"city_name":"Aswan","hour_of_day":5,"avg_pm2_5":67.3},{"city_name":"Aswan","hour_of_day":6,"avg_pm2_5":67.27},{"city_name":"Aswan","hour_of_day":7,"avg_pm2_5":60.63},{"city_name":"Aswan","hour_of_day":8,"avg_pm2_5":47.6},{"city_name":"Aswan","hour_of_day":9,"avg_pm2_5":38.67},{"city_name":"Aswan","hour_of_day":10,"avg_pm2_5":33.63},{"city_name":"Aswan","hour_of_day":11,"avg_pm2_5":30.67},{"city_name":"Aswan","hour_of_day":12,"avg_pm2_5":30.53},{"city_name":"Aswan","hour_of_day":13,"avg_pm2_5":30.53},{"city_name":"Aswan","hour_of_day":14,"avg_pm2_5":31.27},{"city_name":"Aswan","hour_of_day":15,"avg_pm2_5":34.75},{"city_name":"Aswan","hour_of_day":16,"avg_pm2_5":36.95},{"city_name":"Aswan","hour_of_day":17,"avg_pm2_5":38.35},{"city_name":"Aswan","hour_of_day":18,"avg_pm2_5":40.7},{"city_name":"Aswan","hour_of_day":19,"avg_pm2_5":43.4},{"city_name":"Aswan","hour_of_day":20,"avg_pm2_5":46.3},{"city_name":"Aswan","hour_of_day":21,"avg_pm2_5":48.8},{"city_name":"Aswan","hour_of_day":22,"avg_pm2_5":50.55},{"city_name":"Aswan","hour_of_day":23,"avg_pm2_5":52.0},{"city_name":"Cairo","hour_of_day":0,"avg_pm2_5":20.93},{"city_name":"Cairo","hour_of_day":1,"avg_pm2_5":22.07},{"city_name":"Cairo","hour_of_day":2,"avg_pm2_5":22.6},{"city_name":"Cairo","hour_of_day":3,"avg_pm2_5":24.63},{"city_name":"Cairo","hour_of_day":4,"avg_pm2_5":26.33},{"city_name":"Cairo","hour_of_day":5,"avg_pm2_5":27.53},{"city_name":"Cairo","hour_of_day":6,"avg_pm2_5":26.07},{"city_name":"Cairo","hour_of_day":7,"avg_pm2_5":24.67},{"city_name":"Cairo","hour_of_day":8,"avg_pm2_5":23.9},{"city_name":"Cairo","hour_of_day":9,"avg_pm2_5":24.3},{"city_name":"Cairo","hour_of_day":10,"avg_pm2_5":20.97},{"city_name":"Cairo","hour_of_day":11,"avg_pm2_5":18.27},{"city_name":"Cairo","hour_of_day":12,"avg_pm2_5":15.07},{"city_name":"Cairo","hour_of_day":13,"avg_pm2_5":13.4},{"city_name":"Cairo","hour_of_day":14,"avg_pm2_5":12.43},{"city_name":"Cairo","hour_of_day":15,"avg_pm2_5":13.25},{"city_name":"Cairo","hour_of_day":16,"avg_pm2_5":13.7},{"city_name":"Cairo","hour_of_day":17,"avg_pm2_5":15.6},{"city_name":"Cairo","hour_of_day":18,"avg_pm2_5":16.5},{"city_name":"Cairo","hour_of_day":19,"avg_pm2_5":18.1},{"city_name":"Cairo","hour_of_day":20,"avg_pm2_5":18.75},{"city_name":"Cairo","hour_of_day":21,"avg_pm2_5":18.8},{"city_name":"Cairo","hour_of_day":22,"avg_pm2_5":20.0},{"city_name":"Cairo","hour_of_day":23,"avg_pm2_5":20.8},{"city_name":"Giza","hour_of_day":0,"avg_pm2_5":20.93},{"city_name":"Giza","hour_of_day":1,"avg_pm2_5":22.07},{"city_name":"Giza","hour_of_day":2,"avg_pm2_5":22.6},{"city_name":"Giza","hour_of_day":3,"avg_pm2_5":24.63},{"city_name":"Giza","hour_of_day":4,"avg_pm2_5":26.33},{"city_name":"Giza","hour_of_day":5,"avg_pm2_5":27.53},{"city_name":"Giza","hour_of_day":6,"avg_pm2_5":26.07},{"city_name":"Giza","hour_of_day":7,"avg_pm2_5":24.67},{"city_name":"Giza","hour_of_day":8,"avg_pm2_5":23.9},{"city_name":"Giza","hour_of_day":9,"avg_pm2_5":24.3},{"city_name":"Giza","hour_of_day":10,"avg_pm2_5":20.97},{"city_name":"Giza","hour_of_day":11,"avg_pm2_5":18.27},{"city_name":"Giza","hour_of_day":12,"avg_pm2_5":15.07},{"city_name":"Giza","hour_of_day":13,"avg_pm2_5":13.4},{"city_name":"Giza","hour_of_day":14,"avg_pm2_5":12.43},{"city_name":"Giza","hour_of_day":15,"avg_pm2_5":13.25},{"city_name":"Giza","hour_of_day":16,"avg_pm2_5":13.7},{"city_name":"Giza","hour_of_day":17,"avg_pm2_5":15.6},{"city_name":"Giza","hour_of_day":18,"avg_pm2_5":16.5},{"city_name":"Giza","hour_of_day":19,"avg_pm2_5":18.1},{"city_name":"Giza","hour_of_day":20,"avg_pm2_5":18.75},{"city_name":"Giza","hour_of_day":21,"avg_pm2_5":18.8},{"city_name":"Giza","hour_of_day":22,"avg_pm2_5":20.0},{"city_name":"Giza","hour_of_day":23,"avg_pm2_5":20.8},{"city_name":"Luxor","hour_of_day":0,"avg_pm2_5":86.3},{"city_name":"Luxor","hour_of_day":1,"avg_pm2_5":81.47},{"city_name":"Luxor","hour_of_day":2,"avg_pm2_5":74.27},{"city_name":"Luxor","hour_of_day":3,"avg_pm2_5":68.07},{"city_name":"Luxor","hour_of_day":4,"avg_pm2_5":63.47},{"city_name":"Luxor","hour_of_day":5,"avg_pm2_5":58.1},{"city_name":"Luxor","hour_of_day":6,"avg_pm2_5":50.7},{"city_name":"Luxor","hour_of_day":7,"avg_pm2_5":38.47},{"city_name":"Luxor","hour_of_day":8,"avg_pm2_5":29.53},{"city_name":"Luxor","hour_of_day":9,"avg_pm2_5":25.33},{"city_name":"Luxor","hour_of_day":10,"avg_pm2_5":23.13},{"city_name":"Luxor","hour_of_day":11,"avg_pm2_5":23.63},{"city_name":"Luxor","hour_of_day":12,"avg_pm2_5":28.37},{"city_name":"Luxor","hour_of_day":13,"avg_pm2_5":33.33},{"city_name":"Luxor","hour_of_day":14,"avg_pm2_5":40.07},{"city_name":"Luxor","hour_of_day":15,"avg_pm2_5":50.45},{"city_name":"Luxor","hour_of_day":16,"avg_pm2_5":55.0},{"city_name":"Luxor","hour_of_day":17,"avg_pm2_5":60.75},{"city_name":"Luxor","hour_of_day":18,"avg_pm2_5":68.1},{"city_name":"Luxor","hour_of_day":19,"avg_pm2_5":76.15},{"city_name":"Luxor","hour_of_day":20,"avg_pm2_5":82.4},{"city_name":"Luxor","hour_of_day":21,"avg_pm2_5":84.65},{"city_name":"Luxor","hour_of_day":22,"avg_pm2_5":83.1},{"city_name":"Luxor","hour_of_day":23,"avg_pm2_5":79.6},{"city_name":"Mansoura","hour_of_day":0,"avg_pm2_5":18.5},{"city_name":"Mansoura","hour_of_day":1,"avg_pm2_5":20.73},{"city_name":"Mansoura","hour_of_day":2,"avg_pm2_5":21.63},{"city_name":"Mansoura","hour_of_day":3,"avg_pm2_5":22.77},{"city_name":"Mansoura","hour_of_day":4,"avg_pm2_5":20.3},{"city_name":"Mansoura","hour_of_day":5,"avg_pm2_5":17.57},{"city_name":"Mansoura","hour_of_day":6,"avg_pm2_5":15.07},{"city_name":"Mansoura","hour_of_day":7,"avg_pm2_5":15.13},{"city_name":"Mansoura","hour_of_day":8,"avg_pm2_5":14.87},{"city_name":"Mansoura","hour_of_day":9,"avg_pm2_5":14.53},{"city_name":"Mansoura","hour_of_day":10,"avg_pm2_5":14.77},{"city_name":"Mansoura","hour_of_day":11,"avg_pm2_5":15.83},{"city_name":"Mansoura","hour_of_day":12,"avg_pm2_5":13.97},{"city_name":"Mansoura","hour_of_day":13,"avg_pm2_5":14.03},{"city_name":"Mansoura","hour_of_day":14,"avg_pm2_5":15.2},{"city_name":"Mansoura","hour_of_day":15,"avg_pm2_5":18.3},{"city_name":"Mansoura","hour_of_day":16,"avg_pm2_5":14.15},{"city_name":"Mansoura","hour_of_day":17,"avg_pm2_5":14.4},{"city_name":"Mansoura","hour_of_day":18,"avg_pm2_5":14.8},{"city_name":"Mansoura","hour_of_day":19,"avg_pm2_5":15.15},{"city_name":"Mansoura","hour_of_day":20,"avg_pm2_5":16.1},{"city_name":"Mansoura","hour_of_day":21,"avg_pm2_5":17.1},{"city_name":"Mansoura","hour_of_day":22,"avg_pm2_5":17.6},{"city_name":"Mansoura","hour_of_day":23,"avg_pm2_5":17.6},{"city_name":"Port Said","hour_of_day":0,"avg_pm2_5":17.93},{"city_name":"Port Said","hour_of_day":1,"avg_pm2_5":18.97},{"city_name":"Port Said","hour_of_day":2,"avg_pm2_5":22.2},{"city_name":"Port Said","hour_of_day":3,"avg_pm2_5":23.37},{"city_name":"Port Said","hour_of_day":4,"avg_pm2_5":23.57},{"city_name":"Port Said","hour_of_day":5,"avg_pm2_5":22.2},{"city_name":"Port Said","hour_of_day":6,"avg_pm2_5":19.03},{"city_name":"Port Said","hour_of_day":7,"avg_pm2_5":19.6},{"city_name":"Port Said","hour_of_day":8,"avg_pm2_5":19.77},{"city_name":"Port Said","hour_of_day":9,"avg_pm2_5":21.1},{"city_name":"Port Said","hour_of_day":10,"avg_pm2_5":21.57},{"city_name":"Port Said","hour_of_day":11,"avg_pm2_5":19.67},{"city_name":"Port Said","hour_of_day":12,"avg_pm2_5":18.1},{"city_name":"Port Said","hour_of_day":13,"avg_pm2_5":16.5},{"city_name":"Port Said","hour_of_day":14,"avg_pm2_5":15.17},{"city_name":"Port Said","hour_of_day":15,"avg_pm2_5":16.8},{"city_name":"Port Said","hour_of_day":16,"avg_pm2_5":15.3},{"city_name":"Port Said","hour_of_day":17,"avg_pm2_5":15.25},{"city_name":"Port Said","hour_of_day":18,"avg_pm2_5":14.8},{"city_name":"Port Said","hour_of_day":19,"avg_pm2_5":14.95},{"city_name":"Port Said","hour_of_day":20,"avg_pm2_5":15.3},{"city_name":"Port Said","hour_of_day":21,"avg_pm2_5":16.0},{"city_name":"Port Said","hour_of_day":22,"avg_pm2_5":17.15},{"city_name":"Port Said","hour_of_day":23,"avg_pm2_5":17.7},{"city_name":"Suez","hour_of_day":0,"avg_pm2_5":16.0},{"city_name":"Suez","hour_of_day":1,"avg_pm2_5":15.6},{"city_name":"Suez","hour_of_day":2,"avg_pm2_5":15.8},{"city_name":"Suez","hour_of_day":3,"avg_pm2_5":17.47},{"city_name":"Suez","hour_of_day":4,"avg_pm2_5":18.97},{"city_name":"Suez","hour_of_day":5,"avg_pm2_5":20.87},{"city_name":"Suez","hour_of_day":6,"avg_pm2_5":23.3},{"city_name":"Suez","hour_of_day":7,"avg_pm2_5":24.23},{"city_name":"Suez","hour_of_day":8,"avg_pm2_5":23.7},{"city_name":"Suez","hour_of_day":9,"avg_pm2_5":21.4},{"city_name":"Suez","hour_of_day":10,"avg_pm2_5":19.67},{"city_name":"Suez","hour_of_day":11,"avg_pm2_5":18.37},{"city_name":"Suez","hour_of_day":12,"avg_pm2_5":18.93},{"city_name":"Suez","hour_of_day":13,"avg_pm2_5":17.63},{"city_name":"Suez","hour_of_day":14,"avg_pm2_5":18.0},{"city_name":"Suez","hour_of_day":15,"avg_pm2_5":14.35},{"city_name":"Suez","hour_of_day":16,"avg_pm2_5":14.0},{"city_name":"Suez","hour_of_day":17,"avg_pm2_5":14.85},{"city_name":"Suez","hour_of_day":18,"avg_pm2_5":15.7},{"city_name":"Suez","hour_of_day":19,"avg_pm2_5":16.35},{"city_name":"Suez","hour_of_day":20,"avg_pm2_5":16.95},{"city_name":"Suez","hour_of_day":21,"avg_pm2_5":17.85},{"city_name":"Suez","hour_of_day":22,"avg_pm2_5":18.5},{"city_name":"Suez","hour_of_day":23,"avg_pm2_5":19.0}],"health":{"fact_rows":576,"cities":8,"earliest_observation":"2026-08-27T00:00:00","latest_observation":"2026-08-29T23:00:00","last_ingest_at":"2026-08-29T14:09:02","built_at":"2026-08-29T14:16:27.384671"},"checks":[{"name":"fact table is not empty","passed":true,"value":0,"severity":"error","note":"An empty warehouse means extract or transform silently did nothing."},{"name":"no null keys","passed":true,"value":0,"severity":"error","note":"Primary key columns must never be null."},{"name":"grain is unique","passed":true,"value":0,"severity":"error","note":"One row per city per hour. Duplicates would double-count every average."},{"name":"referential integrity","passed":true,"value":0,"severity":"error","note":"Every fact row must point at a real city."},{"name":"pm2_5 within plausible range","passed":true,"value":0,"severity":"error","note":"Negative or absurd concentrations mean an upstream change."},{"name":"temperature within plausible range","passed":true,"value":0,"severity":"error","note":"Egypt is hot, but not that hot."},{"name":"latest readings are observations, not forecasts","passed":true,"value":0,"severity":"error","note":"The dashboard presents these as current readings, so a forecast hour appearing here is published as if it had been measured."},{"name":"daily averages exclude forecast hours","passed":true,"value":0,"severity":"error","note":"A daily mean built partly from predictions is not a daily mean."},{"name":"data is fresh","passed":true,"value":0,"severity":"error","note":"If the newest ingest is over 36h old, the schedule has stopped running."},{"name":"all cities reporting","passed":true,"value":0,"severity":"warn","note":"A city dropping out is worth knowing about but not worth failing on."},{"name":"pm2_5 mostly populated","passed":true,"value":0,"severity":"warn","note":"More than 20% nulls in the headline metric suggests a source problem."}]};
+
+const COLORS = ["#FFC42E","#3FB68B","#5B8DEF","#E5484D","#B48BF2","#F2994A","#40C4C4","#EC77B0"];
+const AQI_COLOR = v =>
+  v == null ? "#5F6B84" : v <= 50 ? "#3FB68B" : v <= 100 ? "#FFC42E" :
+  v <= 150 ? "#F2994A" : v <= 200 ? "#E5484D" : "#B48BF2";
+
+function kpis(){
+  const h = DATA.health, latest = DATA.latest.filter(r => r.us_aqi != null);
+  const worst = latest[0];
+  const avg = latest.length
+    ? (latest.reduce((s,r) => s + r.us_aqi, 0) / latest.length) : null;
+  const cards = [
+    ["Rows in warehouse", Number(h.fact_rows).toLocaleString(), "one per city per hour"],
+    ["Cities tracked", h.cities, "across Egypt"],
+    ["Worst right now", worst ? worst.city_name : "—",
+      worst ? "AQI " + Math.round(worst.us_aqi) : "no data"],
+    ["Mean AQI", avg == null ? "—" : Math.round(avg), "all cities, latest hour"]
+  ];
+  document.getElementById("kpis").innerHTML = cards.map(([l,v,n]) => `
+    <div class="card">
+      <div class="kpi-l">${l}</div>
+      <div class="kpi-v">${v}</div>
+      <div class="kpi-n">${n}</div>
+    </div>`).join("");
+}
+
+function latestTable(){
+  const rows = DATA.latest.map(r => `
+    <tr>
+      <td>${r.city_name}</td>
+      <td class="mono">${r.pm2_5 == null ? "—" : r.pm2_5.toFixed(1)}</td>
+      <td class="mono">${r.us_aqi == null ? "—" : Math.round(r.us_aqi)}</td>
+      <td><span class="pill" style="color:${AQI_COLOR(r.us_aqi)}">${r.aqi_category || "unknown"}</span></td>
+      <td class="mono">${r.temperature_c == null ? "—" : r.temperature_c.toFixed(0) + "°C"}</td>
+      <td class="mono" style="color:var(--dim)">${(r.observed_at||"").replace("T"," ").slice(0,16)}</td>
+    </tr>`).join("");
+  document.getElementById("latest").innerHTML =
+    `<thead><tr><th>City</th><th>PM2.5 µg/m³</th><th>US AQI</th>
+     <th>Category</th><th>Temp</th><th>Observed (UTC)</th></tr></thead>
+     <tbody>${rows}</tbody>`;
+}
+
+const AXIS = {
+  scales:{
+    x:{ grid:{color:"#22304F"}, ticks:{color:"#8D99B0",font:{size:11}} },
+    y:{ grid:{color:"#22304F"}, ticks:{color:"#8D99B0",font:{size:11}},
+        title:{display:true,text:"PM2.5 µg/m³",color:"#5F6B84",font:{size:11}} }
+  },
+  plugins:{ legend:{ labels:{color:"#8D99B0",boxWidth:12,font:{size:11}} } },
+  responsive:true, maintainAspectRatio:false
+};
+
+function trendChart(){
+  const dates = [...new Set(DATA.daily.map(r => r.date_key))].sort();
+  const cities = [...new Set(DATA.daily.map(r => r.city_name))];
+  const series = cities.map((city,i) => ({
+    label: city,
+    data: dates.map(d => {
+      const hit = DATA.daily.find(r => r.city_name === city && r.date_key === d);
+      return hit ? hit.avg_pm2_5 : null;
+    }),
+    borderColor: COLORS[i % COLORS.length],
+    backgroundColor: COLORS[i % COLORS.length],
+    tension: .3, borderWidth: 2, pointRadius: 2, spanGaps: true
+  }));
+  series.push({
+    label: "WHO guideline",
+    data: dates.map(() => 15),
+    borderColor: "#E5484D", borderDash: [6,4],
+    borderWidth: 1.5, pointRadius: 0
+  });
+  new Chart(document.getElementById("trend"),
+    { type:"line", data:{ labels:dates, datasets:series }, options:AXIS });
+}
+
+function profileChart(){
+  const hours = [...Array(24).keys()];
+  const cities = [...new Set(DATA.profile.map(r => r.city_name))];
+  const series = cities.map((city,i) => ({
+    label: city,
+    data: hours.map(h => {
+      const hit = DATA.profile.find(r => r.city_name === city && r.hour_of_day === h);
+      return hit ? hit.avg_pm2_5 : null;
+    }),
+    borderColor: COLORS[i % COLORS.length],
+    backgroundColor: COLORS[i % COLORS.length],
+    tension: .35, borderWidth: 2, pointRadius: 0, spanGaps: true
+  }));
+  const opts = JSON.parse(JSON.stringify(AXIS));
+  opts.scales.x.title = {display:true,text:"Hour of day (UTC)",color:"#5F6B84",font:{size:11}};
+  new Chart(document.getElementById("profile"),
+    { type:"line", data:{ labels:hours.map(h => String(h).padStart(2,"0")), datasets:series },
+      options:opts });
+}
+
+function checksPanel(){
+  document.getElementById("checks").innerHTML = DATA.checks.map(c => {
+    const color = c.passed ? "var(--ok)" : (c.severity === "warn" ? "var(--warn)" : "var(--bad)");
+    return `<div class="check">
+      <span class="dot" style="background:${color}"></span>
+      <span><strong style="font-weight:500">${c.name}</strong>
+      <span style="color:var(--dim)"> — ${c.note}</span></span>
+    </div>`;
+  }).join("");
+}
+
+kpis(); latestTable(); trendChart(); profileChart(); checksPanel();
+document.getElementById("built").textContent =
+  DATA.generated_at.replace("T"," ").replace("+00:00"," UTC");
+</script>
+</body>
+</html>

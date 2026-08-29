@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Egypt Air Quality Warehouse</title>
+<meta name="description" content="An automated data pipeline tracking air quality and weather across eight Egyptian cities.">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#14213D; --amber:#FFC42E; --bg:#0A1120; --card:#101B33;
+  --line:#22304F; --ink:#F4F4F2; --mut:#8D99B0; --dim:#5F6B84;
+  --ok:#3FB68B; --warn:#FFC42E; --bad:#E5484D;
+  --sans:"IBM Plex Sans",system-ui,sans-serif;
+  --disp:"Barlow Condensed",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+     font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:clamp(20px,3vw,44px)}
+h1{font-family:var(--disp);font-size:clamp(34px,5vw,52px);font-weight:700;
+   line-height:1;margin:0 0 10px}
+h2{font-family:var(--disp);font-size:26px;font-weight:600;margin:44px 0 4px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;
+         text-transform:uppercase;color:var(--amber);margin:0 0 8px}
+.sub{color:var(--mut);max-width:60ch;margin:0 0 6px}
+.rule{width:52px;height:3px;background:var(--amber);margin:10px 0 22px}
+.card{background:var(--card);border:1px solid var(--line);padding:20px}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.kpi-l{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+       text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.kpi-v{font-family:var(--disp);font-size:40px;font-weight:700;line-height:1}
+.kpi-n{font-size:12.5px;color:var(--mut);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+   color:var(--dim);text-align:left;padding:10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.pill{font-family:var(--mono);font-size:10.5px;padding:3px 9px;
+      border:1px solid currentColor;white-space:nowrap}
+.chart{position:relative;height:300px}
+.check{display:flex;gap:11px;align-items:flex-start;padding:9px 0;
+       border-bottom:1px solid var(--line);font-size:13.5px}
+.check:last-child{border-bottom:0}
+.dot{flex:0 0 8px;height:8px;margin-top:7px;border-radius:50%}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);font-size:12.5px;background:#0D1729;
+     border:1px solid var(--line);padding:2px 6px}
+pre{background:#0D1729;border:1px solid var(--line);padding:14px;
+    overflow-x:auto;font-family:var(--mono);font-size:12.5px;color:var(--mut)}
+a{color:var(--amber)}
+footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);
+       font-family:var(--mono);font-size:11px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">Automated data pipeline</p>
+  <h1>Egypt Air Quality Warehouse</h1>
+  <p class="sub">Hourly air quality and weather for eight Egyptian cities, extracted from
+  Open-Meteo, modelled into a star schema, tested, and republished automatically by
+  GitHub Actions. No servers, no manual steps.</p>
+  <div class="rule"></div>
+
+  <div class="grid g4" id="kpis"></div>
+
+  <h2>Right now</h2>
+  <p class="sub">Most recent observed hour per city, worst first.</p>
+  <div class="card" style="padding:4px 20px"><table id="latest"></table></div>
+
+  <h2>Last 14 days</h2>
+  <p class="sub">Daily mean PM2.5. The dashed line is the WHO 24-hour guideline of 15 µg/m³.</p>
+  <div class="card"><div class="chart"><canvas id="trend"></canvas></div></div>
+
+  <h2>Daily rhythm</h2>
+  <p class="sub">Average PM2.5 by hour of day, pooled across all observations.</p>
+  <div class="card"><div class="chart"><canvas id="profile"></canvas></div></div>
+
+  <h2>Data quality</h2>
+  <p class="sub">Assertions run against the warehouse on every build. An error-level
+  failure stops the pipeline, so this dashboard is never built from bad data.</p>
+  <div class="card" id="checks"></div>
+
+  <h2>Use the data</h2>
+  <p class="sub">Everything is published as CSV at stable URLs. No key, no sign-up.</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="kpi-l">Files</div>
+      <p style="margin:0;font-size:13.5px;line-height:2">
+        <a href="data/mart_daily_city.csv">mart_daily_city.csv</a><br>
+        <a href="data/mart_latest_city.csv">mart_latest_city.csv</a><br>
+        <a href="data/mart_hourly_profile.csv">mart_hourly_profile.csv</a><br>
+        <a href="data/dashboard.json">dashboard.json</a>
+      </p>
+    </div>
+    <div class="card">
+      <div class="kpi-l">Load it in pandas</div>
+<pre>import pandas as pd
+
+url = ("https://raw.githubusercontent.com/"
+       "USERNAME/egypt-air-quality/main/"
+       "docs/data/mart_daily_city.csv")
+
+df = pd.read_csv(url, parse_dates=["date_key"])
+print(df.groupby("city_name").avg_pm2_5.mean())</pre>
+    </div>
+  </div>
+
+  <footer>
+    Built <span class="mono" id="built"></span> ·
+    __ATTRIBUTION__ ·
+    Pipeline by Mazen Elnaghy
+  </footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+const COLORS = ["#FFC42E","#3FB68B","#5B8DEF","#E5484D","#B48BF2","#F2994A","#40C4C4","#EC77B0"];
+const AQI_COLOR = v =>
+  v == null ? "#5F6B84" : v <= 50 ? "#3FB68B" : v <= 100 ? "#FFC42E" :
+  v <= 150 ? "#F2994A" : v <= 200 ? "#E5484D" : "#B48BF2";
+
+function kpis(){
+  const h = DATA.health, latest = DATA.latest.filter(r => r.us_aqi != null);
+  const worst = latest[0];
+  const avg = latest.length
+    ? (latest.reduce((s,r) => s + r.us_aqi, 0) / latest.length) : null;
+  const cards = [
+    ["Rows in warehouse", Number(h.fact_rows).toLocaleString(), "one per city per hour"],
+    ["Cities tracked", h.cities, "across Egypt"],
+    ["Worst right now", worst ? worst.city_name : "—",
+      worst ? "AQI " + Math.round(worst.us_aqi) : "no data"],
+    ["Mean AQI", avg == null ? "—" : Math.round(avg), "all cities, latest hour"]
+  ];
+  document.getElementById("kpis").innerHTML = cards.map(([l,v,n]) => `
+    <div class="card">
+      <div class="kpi-l">${l}</div>
+      <div class="kpi-v">${v}</div>
+      <div class="kpi-n">${n}</div>
+    </div>`).join("");
+}
+
+function latestTable(){
+  const rows = DATA.latest.map(r => `
+    <tr>
+      <td>${r.city_name}</td>
+      <td class="mono">${r.pm2_5 == null ? "—" : r.pm2_5.toFixed(1)}</td>
+      <td class="mono">${r.us_aqi == null ? "—" : Math.round(r.us_aqi)}</td>
+      <td><span class="pill" style="color:${AQI_COLOR(r.us_aqi)}">${r.aqi_category || "unknown"}</span></td>
+      <td class="mono">${r.temperature_c == null ? "—" : r.temperature_c.toFixed(0) + "°C"}</td>
+      <td class="mono" style="color:var(--dim)">${(r.observed_at||"").replace("T"," ").slice(0,16)}</td>
+    </tr>`).join("");
+  document.getElementById("latest").innerHTML =
+    `<thead><tr><th>City</th><th>PM2.5 µg/m³</th><th>US AQI</th>
+     <th>Category</th><th>Temp</th><th>Observed (UTC)</th></tr></thead>
+     <tbody>${rows}</tbody>`;
+}
+
+const AXIS = {
+  scales:{
+    x:{ grid:{color:"#22304F"}, ticks:{color:"#8D99B0",font:{size:11}} },
+    y:{ grid:{color:"#22304F"}, ticks:{color:"#8D99B0",font:{size:11}},
+        title:{display:true,text:"PM2.5 µg/m³",color:"#5F6B84",font:{size:11}} }
+  },
+  plugins:{ legend:{ labels:{color:"#8D99B0",boxWidth:12,font:{size:11}} } },
+  responsive:true, maintainAspectRatio:false
+};
+
+function trendChart(){
+  const dates = [...new Set(DATA.daily.map(r => r.date_key))].sort();
+  const cities = [...new Set(DATA.daily.map(r => r.city_name))];
+  const series = cities.map((city,i) => ({
+    label: city,
+    data: dates.map(d => {
+      const hit = DATA.daily.find(r => r.city_name === city && r.date_key === d);
+      return hit ? hit.avg_pm2_5 : null;
+    }),
+    borderColor: COLORS[i % COLORS.length],
+    backgroundColor: COLORS[i % COLORS.length],
+    tension: .3, borderWidth: 2, pointRadius: 2, spanGaps: true
+  }));
+  series.push({
+    label: "WHO guideline",
+    data: dates.map(() => 15),
+    borderColor: "#E5484D", borderDash: [6,4],
+    borderWidth: 1.5, pointRadius: 0
+  });
+  new Chart(document.getElementById("trend"),
+    { type:"line", data:{ labels:dates, datasets:series }, options:AXIS });
+}
+
+function profileChart(){
+  const hours = [...Array(24).keys()];
+  const cities = [...new Set(DATA.profile.map(r => r.city_name))];
+  const series = cities.map((city,i) => ({
+    label: city,
+    data: hours.map(h => {
+      const hit = DATA.profile.find(r => r.city_name === city && r.hour_of_day === h);
+      return hit ? hit.avg_pm2_5 : null;
+    }),
+    borderColor: COLORS[i % COLORS.length],
+    backgroundColor: COLORS[i % COLORS.length],
+    tension: .35, borderWidth: 2, pointRadius: 0, spanGaps: true
+  }));
+  const opts = JSON.parse(JSON.stringify(AXIS));
+  opts.scales.x.title = {display:true,text:"Hour of day (UTC)",color:"#5F6B84",font:{size:11}};
+  new Chart(document.getElementById("profile"),
+    { type:"line", data:{ labels:hours.map(h => String(h).padStart(2,"0")), datasets:series },
+      options:opts });
+}
+
+function checksPanel(){
+  document.getElementById("checks").innerHTML = DATA.checks.map(c => {
+    const color = c.passed ? "var(--ok)" : (c.severity === "warn" ? "var(--warn)" : "var(--bad)");
+    return `<div class="check">
+      <span class="dot" style="background:${color}"></span>
+      <span><strong style="font-weight:500">${c.name}</strong>
+      <span style="color:var(--dim)"> — ${c.note}</span></span>
+    </div>`;
+  }).join("");
+}
+
+kpis(); latestTable(); trendChart(); profileChart(); checksPanel();
+document.getElementById("built").textContent =
+  DATA.generated_at.replace("T"," ").replace("+00:00"," UTC");
+</script>
+</body>
+</html>
