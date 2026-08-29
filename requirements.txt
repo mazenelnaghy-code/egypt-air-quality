@@ -1,0 +1,6 @@
+# Lower bounds, not exact pins: an exact duckdb pin has no wheel for newer
+# Python versions and falls back to a source build that needs a C++ toolchain.
+# Major versions are capped so an upgrade can't silently change SQL semantics.
+requests>=2.32,<3
+duckdb>=1.1.3,<2
+pytest>=8.3

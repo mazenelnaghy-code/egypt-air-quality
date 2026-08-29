@@ -1,0 +1,208 @@
+"""Tests for the transform and quality layers.
+
+These run without network access: they generate synthetic raw files,
+build the warehouse from them, and assert on the result. That means CI
+can catch a broken SQL model even when the API is down.
+
+Everything here happens in a temporary directory. Tests must never touch
+data/raw/ — that is the append-only source of truth, and CI commits it.
+"""
+from __future__ import annotations
+
+import json
+import math
+import random
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import pytest
+
+from pipeline import quality, transform
+from pipeline.config import CITIES
+
+
+def make_fake_raw(
+    raw_dir: Path, days: int = 4, seed: int = 7, forecast_hours: int = 12
+) -> int:
+    """Write plausible synthetic readings into `raw_dir`.
+
+    `forecast_hours` of future readings are included on purpose: the real
+    extract asks Open-Meteo for forecast_days=1, so the fact table always
+    contains hours that have not happened yet. Marts that claim to report
+    observations have to exclude them, and a fixture with no future rows
+    cannot prove they do.
+    """
+    rng = random.Random(seed)
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    for old in raw_dir.glob("*.jsonl"):
+        old.unlink()
+
+    now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+    start = now - timedelta(days=days)
+    ingested_at = now.isoformat(timespec="seconds")
+    written = 0
+
+    by_day: dict[str, list[str]] = {}
+    for city in CITIES:
+        # Bigger cities are dirtier; add a daily cycle and some noise.
+        base = 12 + (city["population"] / 500_000)
+        for hour in range(days * 24 + forecast_hours):
+            ts = start + timedelta(hours=hour)
+            cycle = math.sin((ts.hour - 6) / 24 * 2 * math.pi)
+            pm25 = max(1.0, base + cycle * 8 + rng.gauss(0, 3))
+            row = {
+                "city_id": city["city_id"],
+                "observed_at": ts.strftime("%Y-%m-%dT%H:%M"),
+                "ingested_at": ingested_at,
+                "pm2_5": round(pm25, 1),
+                "pm10": round(pm25 * 1.8, 1),
+                "carbon_monoxide": round(rng.uniform(150, 400), 1),
+                "nitrogen_dioxide": round(rng.uniform(5, 40), 1),
+                "sulphur_dioxide": round(rng.uniform(1, 15), 1),
+                "ozone": round(rng.uniform(30, 90), 1),
+                "us_aqi": round(min(300, pm25 * 3.2), 0),
+                "temperature_2m": round(24 + cycle * 7 + rng.gauss(0, 1), 1),
+                "relative_humidity_2m": round(rng.uniform(30, 80), 0),
+                "wind_speed_10m": round(rng.uniform(3, 28), 1),
+            }
+            by_day.setdefault(ts.strftime("%Y-%m-%d"), []).append(
+                json.dumps(row, separators=(",", ":"))
+            )
+            written += 1
+
+    for day, lines in by_day.items():
+        (raw_dir / f"{day}.jsonl").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return written
+
+
+@pytest.fixture(scope="module")
+def sandbox(tmp_path_factory):
+    """An isolated data/ directory: raw partitions plus a scratch warehouse."""
+    root = tmp_path_factory.mktemp("warehouse")
+    raw_dir = root / "raw"
+    make_fake_raw(raw_dir)
+    return raw_dir, root / "test.duckdb"
+
+
+@pytest.fixture(scope="module")
+def warehouse(sandbox):
+    con = transform.run(*sandbox)
+    yield con
+    con.close()
+
+
+def test_fact_table_has_rows(warehouse):
+    assert warehouse.execute(
+        "SELECT COUNT(*) FROM fact_hourly_air_quality"
+    ).fetchone()[0] > 0
+
+
+def test_grain_is_unique(warehouse):
+    dupes = warehouse.execute(
+        """SELECT COUNT(*) FROM (
+               SELECT city_id, observed_at FROM fact_hourly_air_quality
+               GROUP BY 1,2 HAVING COUNT(*) > 1)"""
+    ).fetchone()[0]
+    assert dupes == 0
+
+
+def test_every_city_present(warehouse):
+    n = warehouse.execute(
+        "SELECT COUNT(DISTINCT city_id) FROM fact_hourly_air_quality"
+    ).fetchone()[0]
+    assert n == len(CITIES)
+
+
+def test_dimension_join_is_complete(warehouse):
+    orphans = warehouse.execute(
+        """SELECT COUNT(*) FROM fact_hourly_air_quality f
+           LEFT JOIN dim_city c USING (city_id) WHERE c.city_id IS NULL"""
+    ).fetchone()[0]
+    assert orphans == 0
+
+
+def test_aqi_categories_are_valid(warehouse):
+    bad = warehouse.execute(
+        """SELECT COUNT(*) FROM fact_hourly_air_quality
+           WHERE aqi_category IS NOT NULL AND aqi_category NOT IN
+           ('Good','Moderate','Unhealthy for sensitive groups',
+            'Unhealthy','Very unhealthy','Hazardous')"""
+    ).fetchone()[0]
+    assert bad == 0
+
+
+def test_marts_are_populated(warehouse):
+    for table in ["mart_daily_city", "mart_latest_city", "mart_hourly_profile"]:
+        rows = warehouse.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+        assert rows > 0, f"{table} is empty"
+
+
+def test_rerun_is_idempotent(warehouse, sandbox):
+    """Rebuilding from the same raw files must not change row counts."""
+    before = warehouse.execute(
+        "SELECT COUNT(*) FROM fact_hourly_air_quality"
+    ).fetchone()[0]
+    con = transform.run(*sandbox)
+    after = con.execute("SELECT COUNT(*) FROM fact_hourly_air_quality").fetchone()[0]
+    con.close()
+    assert before == after
+
+
+def test_fixture_actually_contains_forecast_hours(warehouse):
+    """If this is zero, the two tests below prove nothing."""
+    future = warehouse.execute(
+        """SELECT COUNT(*) FROM fact_hourly_air_quality
+           WHERE observed_at > (NOW() AT TIME ZONE 'UTC')"""
+    ).fetchone()[0]
+    assert future > 0
+
+
+def test_latest_city_excludes_forecast_hours(warehouse):
+    """The dashboard calls these current readings, so they must be observed.
+
+    Regression test: the filter used to compare observed_at (UTC) against
+    the machine's local wall clock, so every row was a forecast when built
+    anywhere east of Greenwich.
+    """
+    forecasts = warehouse.execute(
+        """SELECT COUNT(*) FROM mart_latest_city
+           WHERE observed_at > (NOW() AT TIME ZONE 'UTC')"""
+    ).fetchone()[0]
+    assert forecasts == 0
+
+
+def test_daily_averages_exclude_forecast_hours(warehouse):
+    """mart_daily_city had no forecast filter at all, so today's mean was
+    part prediction while the column was named hours_observed."""
+    future_days = warehouse.execute(
+        """SELECT COUNT(*) FROM mart_daily_city
+           WHERE date_key > (NOW() AT TIME ZONE 'UTC')::DATE"""
+    ).fetchone()[0]
+    assert future_days == 0
+
+
+def test_warehouse_session_is_utc(warehouse):
+    """Everything downstream assumes naive timestamps are UTC."""
+    offset = warehouse.execute(
+        "SELECT NOW()::TIMESTAMP - (NOW() AT TIME ZONE 'UTC')"
+    ).fetchone()[0]
+    assert offset == timedelta(0), f"warehouse clock is {offset} off UTC"
+
+
+def test_tests_do_not_touch_real_raw_data(sandbox):
+    """Guard the guard: the suite must build from its own directory.
+
+    Without this, a test run wipes data/raw/ and CI commits synthetic
+    readings over the real history.
+    """
+    from pipeline.config import RAW_DIR
+
+    raw_dir, warehouse_path = sandbox
+    assert RAW_DIR not in raw_dir.parents and raw_dir != RAW_DIR
+    assert warehouse_path.parent != RAW_DIR.parent
+
+
+def test_quality_checks_pass(warehouse):
+    results = quality.run(warehouse)
+    errors = [r for r in results if not r["passed"] and r["severity"] == "error"]
+    assert not errors, errors

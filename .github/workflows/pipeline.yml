@@ -1,0 +1,58 @@
+name: pipeline
+
+on:
+  schedule:
+    # Every 6 hours. GitHub runs cron in UTC and may delay a few minutes
+    # under load, which is fine: the pipeline is idempotent.
+    - cron: "17 */6 * * *"
+  workflow_dispatch:        # lets you trigger it by hand from the Actions tab
+  push:
+    branches: [main]
+    paths:
+      - "pipeline/**"
+      - "sql/**"
+      - "docs/_template.html"
+      - ".github/workflows/pipeline.yml"
+
+permissions:
+  contents: write           # needed to commit new data back to the repo
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false # never interrupt a run mid-write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m pytest tests/ -q
+
+      - name: Extract, transform, test and publish
+        run: python -m pipeline.run all
+
+      - name: Commit new data
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/raw docs
+          if git diff --staged --quiet; then
+            echo "nothing changed"
+          else
+            git commit -m "data: pipeline run $(date -u +'%Y-%m-%d %H:%M UTC')"
+            # Another run may have pushed while we worked; rebase and retry.
+            git pull --rebase --autostash origin main
+            git push
+          fi

@@ -1,0 +1,9 @@
+city_id,city_name,governorate,latitude,longitude,observed_at,pm2_5,pm10,us_aqi,aqi_category,temperature_c,humidity_pct,wind_speed_kmh
+port_said,Port Said,Port Said,31.2653,32.3019,2026-08-29 14:00:00,10.0,29.1,65.0,Moderate,30.2,55.0,31.1
+cairo,Cairo,Cairo,30.0444,31.2357,2026-08-29 14:00:00,10.1,26.6,67.0,Moderate,36.0,23.0,15.8
+alexandria,Alexandria,Alexandria,31.2001,29.9187,2026-08-29 14:00:00,10.9,30.3,60.0,Moderate,28.7,59.0,20.4
+suez,Suez,Suez,29.9668,32.5498,2026-08-29 14:00:00,23.6,77.8,97.0,Moderate,37.4,27.0,18.3
+mansoura,Mansoura,Dakahlia,31.0409,31.3785,2026-08-29 14:00:00,7.8,17.9,65.0,Moderate,31.6,43.0,20.4
+giza,Giza,Giza,30.0131,31.2089,2026-08-29 14:00:00,10.1,26.6,67.0,Moderate,35.9,21.0,17.4
+luxor,Luxor,Luxor,25.6872,32.6396,2026-08-29 14:00:00,35.3,195.6,148.0,Unhealthy for sensitive groups,41.0,14.0,17.9
+aswan,Aswan,Aswan,24.0889,32.8998,2026-08-29 14:00:00,27.2,155.1,107.0,Unhealthy for sensitive groups,41.7,11.0,18.9
