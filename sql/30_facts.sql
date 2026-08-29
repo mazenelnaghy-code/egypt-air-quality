@@ -10,6 +10,13 @@ SELECT
     s.observed_at,
     s.observed_at::DATE              AS date_key,
     EXTRACT(hour FROM s.observed_at) AS hour_of_day,
+    -- Storage stays UTC; this is the same instant expressed in the local
+    -- civil time people actually live in. Converting through the IANA zone
+    -- rather than adding a fixed offset means Egypt's DST switch is handled
+    -- for us, so a summer reading shifts by 3 hours and a winter one by 2.
+    EXTRACT(hour FROM (s.observed_at AT TIME ZONE 'UTC')
+                       AT TIME ZONE getvariable('local_tz'))
+                                     AS hour_of_day_local,
     s.pm2_5,
     s.pm10,
     s.carbon_monoxide,

@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 EXPORTS = {
     "mart_daily_city": "date_key, city_id",
     "mart_latest_city": "city_id",
-    "mart_hourly_profile": "city_name, hour_of_day",
+    "mart_hourly_profile": "city_name, hour_of_day_local",
     "mart_pipeline_health": "built_at",   # single row; ordered for consistency
 }
 
@@ -67,13 +67,15 @@ def run(con: duckdb.DuckDBPyConnection, checks: list[dict]) -> None:
         """SELECT city_name, aqi_grid, date_key::VARCHAR AS date_key,
                   avg_pm2_5, avg_us_aqi
            FROM mart_daily_city
-           WHERE date_key >= CURRENT_DATE - 14
+           -- Strictly greater than, so this is 14 dates and not 15. The
+           -- heading says fourteen days.
+           WHERE date_key > CURRENT_DATE - 14
            ORDER BY date_key, city_name""",
     )
     profile = _json_rows(
         con,
-        "SELECT city_name, aqi_grid, hour_of_day, avg_pm2_5 "
-        "FROM mart_hourly_profile ORDER BY city_name, hour_of_day",
+        "SELECT city_name, aqi_grid, hour_of_day_local, avg_pm2_5 "
+        "FROM mart_hourly_profile ORDER BY city_name, hour_of_day_local",
     )
     health = _json_rows(con, "SELECT * FROM mart_pipeline_health")[0]
 

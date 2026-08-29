@@ -68,11 +68,18 @@ WHERE rn = 1;
 
 -- Does pollution follow a daily rhythm? This is the kind of question
 -- a star schema makes cheap to answer.
+--
+-- Grouped by local hour, not UTC. The whole point of this table is to line
+-- pollution up against human activity — traffic, cooking, the evening
+-- inversion — and in UTC every one of those lands 2 or 3 hours off, which
+-- makes the chart look like Cairo's rush hour is at two in the afternoon.
+-- Around a DST switch one local hour collects an extra sample and another
+-- collects none; sample_size shows it.
 CREATE OR REPLACE TABLE mart_hourly_profile AS
 SELECT
     c.city_name,
     c.aqi_grid,
-    f.hour_of_day,
+    f.hour_of_day_local,
     ROUND(AVG(CAST(f.pm2_5  AS DECIMAL(18,4))), 2) AS avg_pm2_5,
     ROUND(AVG(CAST(f.us_aqi AS DECIMAL(18,4))), 1) AS avg_us_aqi,
     COUNT(*)                                      AS sample_size

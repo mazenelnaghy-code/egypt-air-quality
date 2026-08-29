@@ -3,6 +3,7 @@
     python -m pipeline.run all         # extract -> transform -> test -> publish
     python -m pipeline.run extract
     python -m pipeline.run build       # transform -> test -> publish (no network)
+    python -m pipeline.run backfill    # wide extract, then the full build
 """
 from __future__ import annotations
 
@@ -11,6 +12,7 @@ import logging
 import sys
 
 from . import extract, publish, quality, transform
+from .config import BACKFILL_DAYS
 
 
 def _setup_logging() -> None:
@@ -30,7 +32,14 @@ def main(argv: list[str] | None = None) -> int:
         "stage",
         nargs="?",
         default="all",
-        choices=["all", "extract", "transform", "test", "publish", "build"],
+        choices=["all", "extract", "transform", "test", "publish", "build",
+                 "backfill"],
+    )
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=BACKFILL_DAYS,
+        help=f"days of history for backfill (default {BACKFILL_DAYS}, max 92)",
     )
     args = parser.parse_args(argv)
 
@@ -39,7 +48,10 @@ def main(argv: list[str] | None = None) -> int:
             extract.run()
             return 0
 
-        if args.stage in ("all",):
+        if args.stage == "backfill":
+            log.info("backfilling %s days of history", args.days)
+            extract.run(past_days=args.days)
+        elif args.stage in ("all",):
             extract.run()
 
         con = transform.run()
