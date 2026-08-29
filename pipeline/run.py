@@ -4,6 +4,7 @@
     python -m pipeline.run extract
     python -m pipeline.run build       # transform -> test -> publish (no network)
     python -m pipeline.run backfill    # wide extract, then the full build
+    python -m pipeline.run compact     # gzip closed raw partitions
 """
 from __future__ import annotations
 
@@ -33,7 +34,7 @@ def main(argv: list[str] | None = None) -> int:
         nargs="?",
         default="all",
         choices=["all", "extract", "transform", "test", "publish", "build",
-                 "backfill"],
+                 "backfill", "compact"],
     )
     parser.add_argument(
         "--days",
@@ -44,15 +45,24 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
+        if args.stage == "compact":
+            extract.compact_partitions()
+            return 0
+
         if args.stage == "extract":
             extract.run()
+            extract.compact_partitions()
             return 0
 
         if args.stage == "backfill":
             log.info("backfilling %s days of history", args.days)
             extract.run(past_days=args.days)
+            extract.compact_partitions()
         elif args.stage in ("all",):
             extract.run()
+            # Compaction follows every fetch, so raw storage maintains itself
+            # rather than depending on someone remembering to run it.
+            extract.compact_partitions()
 
         con = transform.run()
 

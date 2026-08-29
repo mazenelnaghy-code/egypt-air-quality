@@ -29,6 +29,14 @@ PAST_DAYS = 2
 # the same raw partitions and de-duplicates against what is already there.
 BACKFILL_DAYS = 30
 
+# Partitions older than this are gzipped in place. A run writes the dates its
+# window covers — today back to today-PAST_DAYS — so once a date falls outside
+# that window nothing will append to it again and it can be compressed. The
+# margin above PAST_DAYS is slack for a run that starts just before midnight
+# UTC, or a schedule that slips. Raw JSONL compresses about 10x, which is the
+# difference between roughly 230 MB and 22 MB of repository per year.
+KEEP_PLAIN_DAYS = PAST_DAYS + 2
+
 # Observations are stored in UTC because that is what the API is asked for and
 # UTC is the only sane storage choice. But "when is pollution worst?" is a
 # question about people's days, and nobody in Cairo experiences rush hour in

@@ -60,6 +60,17 @@ IANA zone `Africa/Cairo` rather than a hardcoded offset — Egypt has observed
 DST again since 2023, so the offset is +2 for part of the year and +3 for the
 rest. Cairo's PM2.5 peak sits at 07:00 local, where it belongs.
 
+**Closed partitions are compressed, and nothing downstream notices.** A day
+that has fallen outside the fetch window will never be appended to again, so it
+is gzipped in place — about 10x on this data, the difference between roughly
+230 MB and 22 MB of repository per year. Models read `*.jsonl*`, which matches
+both the plain recent partitions and the archives, and DuckDB infers
+compression per file, so a mixed directory reads as one table. Compaction runs
+after every fetch, so storage maintains itself instead of waiting for someone
+to remember. The archives are written with the timestamp and filename fields
+zeroed, because gzip stamps both by default and a finished day whose bytes
+change on every rewrite would churn in git forever.
+
 **Reproducible means byte-identical, and that takes work.** Two rebuilds of the
 same raw data used to publish different files. Two separate causes: a table has
 no inherent row order, so unordered `COPY` wrote the rows shuffled; and DOUBLE
@@ -128,7 +139,8 @@ sql/
   30_facts.sql       fact_hourly_air_quality
   40_marts.sql       pre-aggregated tables for the dashboard
 tests/             offline tests using synthetic data
-data/raw/          append-only JSONL, one file per observation date
+data/raw/          append-only JSONL, one file per observation date;
+                   closed days are gzipped (*.jsonl.gz)
 docs/              published dashboard and CSV exports
 ```
 
@@ -158,6 +170,7 @@ Individual stages:
 python -m pipeline.run extract     # fetch only
 python -m pipeline.run build       # rebuild from existing raw data, no network
 python -m pipeline.run test        # transform + quality checks
+python -m pipeline.run compact     # gzip partitions no run will append to
 python -m pytest tests/ -q         # unit tests, works offline
 ```
 
