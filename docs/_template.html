@@ -76,8 +76,9 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);
   <div class="card" style="padding:4px 20px"><table id="latest"></table></div>
   <p class="sub" id="shared-note" style="font-size:12.5px;margin-top:10px"></p>
 
-  <h2>Last 14 days</h2>
-  <p class="sub">Daily mean PM2.5. The dashed line is the WHO 24-hour guideline of 15 µg/m³.</p>
+  <h2>Daily trend</h2>
+  <p class="sub"><span id="trend-span"></span> The dashed line is the WHO 24-hour
+  guideline of 15 µg/m³.</p>
   <div class="card"><div class="chart"><canvas id="trend"></canvas></div></div>
 
   <h2>Daily rhythm</h2>
@@ -125,6 +126,35 @@ print(df.groupby("city_name").avg_pm2_5.mean())</pre>
 const DATA = /*__DATA__*/null;
 
 const COLORS = ["#FFC42E","#3FB68B","#5B8DEF","#E5484D","#B48BF2","#F2994A","#40C4C4","#EC77B0"];
+
+// Both charts plot air quality, which is measured per grid cell rather than
+// per city, so a cell is one series however many cities sit in it. Otherwise
+// Cairo and Giza are drawn as two lines with identical values and one is
+// permanently invisible under the other, while the legend claims eight.
+function cells(rows){
+  const byCell = new Map();
+  rows.forEach(r => {
+    const key = r.aqi_grid || r.city_id || r.city_name;
+    if (!byCell.has(key)) byCell.set(key, new Set());
+    byCell.get(key).add(r.city_name);
+  });
+  return byCell;
+}
+
+// A city's colour must not depend on the order rows arrived in. That order
+// comes from a SQL result with no total ordering, so it varied between runs:
+// the whole palette reshuffled every six hours, and the same city was drawn
+// in two different colours in the two charts on this page. Sort the cell keys
+// and index the palette by that, so a colour is a stable property of a place.
+const CELL_LABEL = new Map(), CELL_COLOR = new Map();
+[...cells([...DATA.daily, ...DATA.profile, ...DATA.latest]).entries()]
+  .map(([key, names]) => [key, [...names].sort().join(" / ")])
+  .sort((a, b) => a[1].localeCompare(b[1]))
+  .forEach(([key, label], i) => {
+    CELL_LABEL.set(key, label);
+    CELL_COLOR.set(key, COLORS[i % COLORS.length]);
+  });
+const cellKey = r => r.aqi_grid || r.city_id || r.city_name;
 const AQI_COLOR = v =>
   v == null ? "#5F6B84" : v <= 50 ? "#3FB68B" : v <= 100 ? "#FFC42E" :
   v <= 150 ? "#F2994A" : v <= 200 ? "#E5484D" : "#B48BF2";
@@ -202,15 +232,26 @@ const AXIS = {
 
 function trendChart(){
   const dates = [...new Set(DATA.daily.map(r => r.date_key))].sort();
-  const cities = [...new Set(DATA.daily.map(r => r.city_name))];
-  const series = cities.map((city,i) => ({
-    label: city,
+  const keys = [...new Set(DATA.daily.map(cellKey))]
+    .sort((a,b) => CELL_LABEL.get(a).localeCompare(CELL_LABEL.get(b)));
+
+  // Say how much history there actually is. The query asks for 14 days; a
+  // warehouse that started collecting yesterday has two, and a heading that
+  // says otherwise is describing the query rather than the data.
+  document.getElementById("trend-span").textContent = dates.length >= 14
+    ? "Daily mean PM2.5 over the last 14 days."
+    : `Daily mean PM2.5. ${dates.length} ${dates.length === 1 ? "day" : "days"} of
+       history so far — the window fills out to 14 days as the pipeline runs.
+       The most recent day is still in progress.`;
+
+  const series = keys.map(key => ({
+    label: CELL_LABEL.get(key),
     data: dates.map(d => {
-      const hit = DATA.daily.find(r => r.city_name === city && r.date_key === d);
+      const hit = DATA.daily.find(r => cellKey(r) === key && r.date_key === d);
       return hit ? hit.avg_pm2_5 : null;
     }),
-    borderColor: COLORS[i % COLORS.length],
-    backgroundColor: COLORS[i % COLORS.length],
+    borderColor: CELL_COLOR.get(key),
+    backgroundColor: CELL_COLOR.get(key),
     tension: .3, borderWidth: 2, pointRadius: 2, spanGaps: true
   }));
   series.push({
@@ -225,15 +266,16 @@ function trendChart(){
 
 function profileChart(){
   const hours = [...Array(24).keys()];
-  const cities = [...new Set(DATA.profile.map(r => r.city_name))];
-  const series = cities.map((city,i) => ({
-    label: city,
+  const keys = [...new Set(DATA.profile.map(cellKey))]
+    .sort((a,b) => CELL_LABEL.get(a).localeCompare(CELL_LABEL.get(b)));
+  const series = keys.map(key => ({
+    label: CELL_LABEL.get(key),
     data: hours.map(h => {
-      const hit = DATA.profile.find(r => r.city_name === city && r.hour_of_day === h);
+      const hit = DATA.profile.find(r => cellKey(r) === key && r.hour_of_day === h);
       return hit ? hit.avg_pm2_5 : null;
     }),
-    borderColor: COLORS[i % COLORS.length],
-    backgroundColor: COLORS[i % COLORS.length],
+    borderColor: CELL_COLOR.get(key),
+    backgroundColor: CELL_COLOR.get(key),
     tension: .35, borderWidth: 2, pointRadius: 0, spanGaps: true
   }));
   const opts = JSON.parse(JSON.stringify(AXIS));

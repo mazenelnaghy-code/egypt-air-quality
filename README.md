@@ -42,6 +42,16 @@ about a second, and it buys idempotency: any run produces exactly the same
 warehouse. A failed or half-finished run is never a problem, and backfilling is
 just another run.
 
+**Reproducible means byte-identical, and that takes work.** Two rebuilds of the
+same raw data used to publish different files. Two separate causes: a table has
+no inherent row order, so unordered `COPY` wrote the rows shuffled; and DOUBLE
+addition is not associative, so an `AVG` summed in a different physical order
+came out a fraction different and `ROUND` turned that into a flipped last digit.
+Exports now carry an explicit `ORDER BY`, and every `AVG` sums `DECIMAL`, which
+is exact and therefore order-independent. A test rebuilds twice and compares
+hashes. The visible symptom was worse than the churn: the dashboard derived its
+series colours from row order, so every city changed colour on every run.
+
 **Duplicates are expected, not prevented.** The API returns overlapping windows
 every run, so the same (city, hour) arrives many times, sometimes with corrected
 values. Staging keeps the most recently ingested version via

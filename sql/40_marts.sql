@@ -2,6 +2,16 @@
 -- MARTS
 -- Pre-aggregated tables shaped for the dashboard. The point of a
 -- mart is that the consumer never has to know the star schema.
+--
+-- Every AVG below sums DECIMAL rather than DOUBLE. Floating point
+-- addition is not associative, so a DOUBLE average depends on the
+-- order the rows were summed in -- and that order is not stable:
+-- the warehouse is rebuilt on every run and the rows land in a
+-- different physical order each time. The sums differed in the last
+-- bit, ROUND turned that into a flipped final digit, and published
+-- numbers drifted between builds of identical raw data. DECIMAL
+-- addition is exact, so the result no longer depends on row order.
+-- MAX, COUNT and SUM over integers are already order-independent.
 -- ============================================================
 
 CREATE OR REPLACE TABLE mart_daily_city AS
@@ -9,15 +19,16 @@ SELECT
     f.city_id,
     c.city_name,
     c.governorate,
+    c.aqi_grid,
     f.date_key,
     COUNT(*)                                            AS hours_observed,
-    ROUND(AVG(f.pm2_5), 2)                              AS avg_pm2_5,
+    ROUND(AVG(CAST(f.pm2_5          AS DECIMAL(18,4))), 2) AS avg_pm2_5,
     ROUND(MAX(f.pm2_5), 2)                              AS max_pm2_5,
-    ROUND(AVG(f.pm10), 2)                               AS avg_pm10,
-    ROUND(AVG(f.us_aqi), 1)                             AS avg_us_aqi,
+    ROUND(AVG(CAST(f.pm10           AS DECIMAL(18,4))), 2) AS avg_pm10,
+    ROUND(AVG(CAST(f.us_aqi         AS DECIMAL(18,4))), 1) AS avg_us_aqi,
     ROUND(MAX(f.us_aqi), 1)                             AS max_us_aqi,
-    ROUND(AVG(f.temperature_c), 1)                      AS avg_temp_c,
-    ROUND(AVG(f.wind_speed_kmh), 1)                     AS avg_wind_kmh,
+    ROUND(AVG(CAST(f.temperature_c  AS DECIMAL(18,4))), 1) AS avg_temp_c,
+    ROUND(AVG(CAST(f.wind_speed_kmh AS DECIMAL(18,4))), 1) AS avg_wind_kmh,
     SUM(CASE WHEN f.exceeds_who_pm25 THEN 1 ELSE 0 END) AS hours_above_who
 FROM fact_hourly_air_quality f
 JOIN dim_city c USING (city_id)
@@ -60,10 +71,11 @@ WHERE rn = 1;
 CREATE OR REPLACE TABLE mart_hourly_profile AS
 SELECT
     c.city_name,
+    c.aqi_grid,
     f.hour_of_day,
-    ROUND(AVG(f.pm2_5), 2)  AS avg_pm2_5,
-    ROUND(AVG(f.us_aqi), 1) AS avg_us_aqi,
-    COUNT(*)                AS sample_size
+    ROUND(AVG(CAST(f.pm2_5  AS DECIMAL(18,4))), 2) AS avg_pm2_5,
+    ROUND(AVG(CAST(f.us_aqi AS DECIMAL(18,4))), 1) AS avg_us_aqi,
+    COUNT(*)                                      AS sample_size
 FROM fact_hourly_air_quality f
 JOIN dim_city c USING (city_id)
 WHERE f.observed_at <= NOW()::TIMESTAMP
