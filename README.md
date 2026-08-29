@@ -37,6 +37,15 @@ Actions minutes, so the whole thing runs indefinitely at no cost.
 else. Every downstream table is derived. If a transform has a bug, fix it and
 rebuild — no data is lost.
 
+**Partitions are named for the day they describe**, not the day they were
+fetched, so a filename tells you what is inside it and "what happened on the
+21st?" is one file rather than a scan of all of them. It also keeps a backfill
+proportionate: thirty days of history arrives as thirty ordinary files instead
+of one outsized file whose name claims a single day. A given date is appended
+to by every run whose window covers it — roughly four days' worth — and is then
+never touched again, so partitions go effectively immutable shortly after the
+fact.
+
 **The warehouse is rebuilt from scratch on every run.** At this volume that costs
 about a second, and it buys idempotency: any run produces exactly the same
 warehouse. A failed or half-finished run is never a problem, and backfilling is
@@ -119,7 +128,7 @@ sql/
   30_facts.sql       fact_hourly_air_quality
   40_marts.sql       pre-aggregated tables for the dashboard
 tests/             offline tests using synthetic data
-data/raw/          append-only JSONL partitions
+data/raw/          append-only JSONL, one file per observation date
 docs/              published dashboard and CSV exports
 ```
 
