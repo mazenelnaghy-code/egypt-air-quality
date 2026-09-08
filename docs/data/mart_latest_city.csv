@@ -1,9 +1,9 @@
 city_id,city_name,governorate,aqi_grid,latitude,longitude,observed_at,pm2_5,pm10,us_aqi,aqi_category,temperature_c,humidity_pct,wind_speed_kmh
-alexandria,Alexandria,Alexandria,alexandria,31.2001,29.9187,2026-09-08 04:00:00,12.6,25.6,56.0,Moderate,26.1,86.0,4.6
-aswan,Aswan,Aswan,aswan,24.0889,32.8998,2026-09-08 04:00:00,111.3,359.5,157.0,Unhealthy,25.7,34.0,7.2
-cairo,Cairo,Cairo,cairo_giza,30.0444,31.2357,2026-09-08 04:00:00,28.9,42.0,67.0,Moderate,23.1,93.0,2.4
-giza,Giza,Giza,cairo_giza,30.0131,31.2089,2026-09-08 04:00:00,28.9,42.0,67.0,Moderate,23.0,93.0,3.2
-luxor,Luxor,Luxor,luxor,25.6872,32.6396,2026-09-07 23:00:00,53.3,196.0,125.0,Unhealthy for sensitive groups,29.0,21.0,4.9
-mansoura,Mansoura,Dakahlia,mansoura,31.0409,31.3785,2026-09-08 04:00:00,25.7,39.3,58.0,Moderate,21.8,100.0,3.4
-port_said,Port Said,Port Said,port_said,31.2653,32.3019,2026-09-08 04:00:00,20.1,28.3,62.0,Moderate,24.1,94.0,7.7
-suez,Suez,Suez,suez,29.9668,32.5498,2026-09-08 04:00:00,10.2,13.8,57.0,Moderate,25.1,81.0,10.9
+alexandria,Alexandria,Alexandria,alexandria,31.2001,29.9187,2026-09-08 11:00:00,16.1,26.0,57.0,Moderate,30.7,65.0,15.0
+aswan,Aswan,Aswan,aswan,24.0889,32.8998,2026-09-08 11:00:00,32.7,144.4,156.0,Unhealthy,39.8,12.0,10.6
+cairo,Cairo,Cairo,cairo_giza,30.0444,31.2357,2026-09-08 11:00:00,24.9,36.0,72.0,Moderate,36.7,30.0,7.1
+giza,Giza,Giza,cairo_giza,30.0131,31.2089,2026-09-08 11:00:00,24.9,36.0,72.0,Moderate,36.8,30.0,8.8
+luxor,Luxor,Luxor,luxor,25.6872,32.6396,2026-09-08 11:00:00,19.3,76.4,107.0,Unhealthy for sensitive groups,40.5,13.0,8.9
+mansoura,Mansoura,Dakahlia,mansoura,31.0409,31.3785,2026-09-08 11:00:00,16.3,22.3,64.0,Moderate,37.6,27.0,2.6
+port_said,Port Said,Port Said,port_said,31.2653,32.3019,2026-09-08 11:00:00,24.8,39.6,66.0,Moderate,33.1,50.0,10.0
+suez,Suez,Suez,suez,29.9668,32.5498,2026-09-08 11:00:00,16.8,28.8,56.0,Moderate,35.2,37.0,15.2
