@@ -1,9 +1,9 @@
 city_id,city_name,governorate,aqi_grid,latitude,longitude,observed_at,pm2_5,pm10,us_aqi,aqi_category,temperature_c,humidity_pct,wind_speed_kmh
-alexandria,Alexandria,Alexandria,alexandria,31.2001,29.9187,2026-09-11 04:00:00,10.6,21.3,51.0,Moderate,24.7,71.0,5.5
-aswan,Aswan,Aswan,aswan,24.0889,32.8998,2026-09-11 04:00:00,74.5,281.3,151.0,Unhealthy,27.8,32.0,17.8
-cairo,Cairo,Cairo,cairo_giza,30.0444,31.2357,2026-09-11 04:00:00,19.6,32.6,64.0,Moderate,21.0,90.0,4.0
-giza,Giza,Giza,cairo_giza,30.0131,31.2089,2026-09-11 04:00:00,19.6,32.6,64.0,Moderate,20.9,91.0,5.1
+alexandria,Alexandria,Alexandria,alexandria,31.2001,29.9187,2026-09-11 11:00:00,11.8,19.5,52.0,Moderate,29.1,57.0,12.8
+aswan,Aswan,Aswan,aswan,24.0889,32.8998,2026-09-11 11:00:00,52.7,272.9,160.0,Unhealthy,40.3,13.0,14.9
+cairo,Cairo,Cairo,cairo_giza,30.0444,31.2357,2026-09-11 11:00:00,18.8,27.6,62.0,Moderate,32.6,37.0,7.9
+giza,Giza,Giza,cairo_giza,30.0131,31.2089,2026-09-11 11:00:00,18.8,27.6,62.0,Moderate,32.7,36.0,9.0
 luxor,Luxor,Luxor,luxor,25.6872,32.6396,2026-09-10 23:00:00,88.5,366.0,154.0,Unhealthy,29.6,27.0,6.5
-mansoura,Mansoura,Dakahlia,mansoura,31.0409,31.3785,2026-09-11 04:00:00,10.5,21.1,53.0,Moderate,20.9,87.0,4.5
-port_said,Port Said,Port Said,port_said,31.2653,32.3019,2026-09-11 04:00:00,10.2,18.4,54.0,Moderate,25.4,72.0,5.2
-suez,Suez,Suez,suez,29.9668,32.5498,2026-09-11 04:00:00,7.2,10.1,64.0,Moderate,25.5,71.0,11.1
+mansoura,Mansoura,Dakahlia,mansoura,31.0409,31.3785,2026-09-11 11:00:00,11.9,17.1,53.0,Moderate,32.9,45.0,7.5
+port_said,Port Said,Port Said,port_said,31.2653,32.3019,2026-09-11 11:00:00,11.7,19.1,53.0,Moderate,30.6,51.0,13.0
+suez,Suez,Suez,suez,29.9668,32.5498,2026-09-11 11:00:00,11.6,21.4,61.0,Moderate,33.1,40.0,14.6
