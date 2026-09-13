@@ -19,10 +19,10 @@ Alexandria,alexandria,16,14.15,60.5,46
 Alexandria,alexandria,17,13.73,60.5,46
 Alexandria,alexandria,18,13.55,60.5,46
 Alexandria,alexandria,19,13.53,60.5,46
-Alexandria,alexandria,20,13.62,60.7,45
-Alexandria,alexandria,21,13.68,60.6,45
-Alexandria,alexandria,22,13.91,60.7,45
-Alexandria,alexandria,23,13.88,60.7,45
+Alexandria,alexandria,20,13.55,60.5,46
+Alexandria,alexandria,21,13.59,60.5,46
+Alexandria,alexandria,22,13.8,60.5,46
+Alexandria,alexandria,23,13.76,60.5,46
 Aswan,aswan,0,44.86,126.8,45
 Aswan,aswan,1,49.05,126.9,45
 Aswan,aswan,2,52.22,126.8,45
@@ -43,10 +43,10 @@ Aswan,aswan,16,31.33,128.2,46
 Aswan,aswan,17,31.26,128.2,46
 Aswan,aswan,18,31.77,128.2,46
 Aswan,aswan,19,32.75,128.1,46
-Aswan,aswan,20,33.16,127.1,45
-Aswan,aswan,21,34.34,127.0,45
-Aswan,aswan,22,36.61,126.9,45
-Aswan,aswan,23,40.27,126.7,45
+Aswan,aswan,20,33.13,127.8,46
+Aswan,aswan,21,34.26,127.7,46
+Aswan,aswan,22,36.49,127.5,46
+Aswan,aswan,23,40.25,127.4,46
 Cairo,cairo_giza,0,16.89,69.9,45
 Cairo,cairo_giza,1,17.36,69.9,45
 Cairo,cairo_giza,2,18.27,69.9,45
@@ -67,10 +67,10 @@ Cairo,cairo_giza,16,18.43,70.0,46
 Cairo,cairo_giza,17,17.03,69.9,46
 Cairo,cairo_giza,18,16.33,72.2,46
 Cairo,cairo_giza,19,16.53,76.8,46
-Cairo,cairo_giza,20,17.3,79.5,45
-Cairo,cairo_giza,21,17.0,77.6,45
-Cairo,cairo_giza,22,16.64,73.8,45
-Cairo,cairo_giza,23,16.79,70.6,45
+Cairo,cairo_giza,20,17.28,79.3,46
+Cairo,cairo_giza,21,16.95,77.4,46
+Cairo,cairo_giza,22,16.58,73.7,46
+Cairo,cairo_giza,23,16.72,70.6,46
 Giza,cairo_giza,0,16.89,69.9,45
 Giza,cairo_giza,1,17.36,69.9,45
 Giza,cairo_giza,2,18.27,69.9,45
@@ -91,10 +91,10 @@ Giza,cairo_giza,16,18.43,70.0,46
 Giza,cairo_giza,17,17.03,69.9,46
 Giza,cairo_giza,18,16.33,72.2,46
 Giza,cairo_giza,19,16.53,76.8,46
-Giza,cairo_giza,20,17.3,79.5,45
-Giza,cairo_giza,21,17.0,77.6,45
-Giza,cairo_giza,22,16.64,73.8,45
-Giza,cairo_giza,23,16.79,70.6,45
+Giza,cairo_giza,20,17.28,79.3,46
+Giza,cairo_giza,21,16.95,77.4,46
+Giza,cairo_giza,22,16.58,73.7,46
+Giza,cairo_giza,23,16.72,70.6,46
 Luxor,luxor,0,76.66,143.3,45
 Luxor,luxor,1,77.79,143.5,45
 Luxor,luxor,2,76.29,143.5,45
@@ -115,10 +115,10 @@ Luxor,luxor,16,31.36,142.2,46
 Luxor,luxor,17,35.11,142.5,46
 Luxor,luxor,18,39.77,142.9,46
 Luxor,luxor,19,43.79,143.1,46
-Luxor,luxor,20,48.15,142.9,45
-Luxor,luxor,21,55.32,143.0,45
-Luxor,luxor,22,63.97,143.2,45
-Luxor,luxor,23,71.82,143.2,45
+Luxor,luxor,20,48.05,143.2,46
+Luxor,luxor,21,55.32,143.2,46
+Luxor,luxor,22,64.06,143.4,46
+Luxor,luxor,23,71.9,143.4,46
 Mansoura,mansoura,0,14.39,59.4,45
 Mansoura,mansoura,1,14.94,59.4,45
 Mansoura,mansoura,2,15.41,59.4,45
@@ -139,10 +139,10 @@ Mansoura,mansoura,16,11.36,59.4,46
 Mansoura,mansoura,17,11.25,59.8,46
 Mansoura,mansoura,18,11.24,61.7,46
 Mansoura,mansoura,19,11.23,63.2,46
-Mansoura,mansoura,20,11.98,63.1,45
-Mansoura,mansoura,21,12.63,61.9,45
-Mansoura,mansoura,22,13.13,60.7,45
-Mansoura,mansoura,23,13.7,59.7,45
+Mansoura,mansoura,20,11.91,63.1,46
+Mansoura,mansoura,21,12.56,61.9,46
+Mansoura,mansoura,22,13.06,60.7,46
+Mansoura,mansoura,23,13.62,59.7,46
 Port Said,port_said,0,12.55,59.8,45
 Port Said,port_said,1,12.72,59.4,45
 Port Said,port_said,2,12.98,59.4,45
@@ -163,10 +163,10 @@ Port Said,port_said,16,13.4,60.0,46
 Port Said,port_said,17,12.99,61.9,46
 Port Said,port_said,18,12.71,65.6,46
 Port Said,port_said,19,12.46,68.6,46
-Port Said,port_said,20,12.44,69.2,45
-Port Said,port_said,21,12.39,67.4,45
-Port Said,port_said,22,12.37,64.1,45
-Port Said,port_said,23,12.44,61.4,45
+Port Said,port_said,20,12.37,69.0,46
+Port Said,port_said,21,12.32,67.2,46
+Port Said,port_said,22,12.29,64.0,46
+Port Said,port_said,23,12.36,61.4,46
 Suez,suez,0,13.65,77.6,45
 Suez,suez,1,13.28,68.0,45
 Suez,suez,2,12.88,63.1,45
@@ -187,7 +187,7 @@ Suez,suez,16,17.96,67.0,46
 Suez,suez,17,17.18,79.5,46
 Suez,suez,18,16.5,92.8,46
 Suez,suez,19,16.03,102.1,46
-Suez,suez,20,15.84,105.8,45
-Suez,suez,21,15.44,103.2,45
-Suez,suez,22,14.71,96.6,45
-Suez,suez,23,14.04,87.5,45
+Suez,suez,20,15.75,105.2,46
+Suez,suez,21,15.36,102.5,46
+Suez,suez,22,14.65,95.9,46
+Suez,suez,23,14.0,86.8,46
