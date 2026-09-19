@@ -403,14 +403,15 @@ alexandria,Alexandria,Alexandria,alexandria,2026-09-18,24,9.06,10.5,19.26,52.2,5
 aswan,Aswan,Aswan,aswan,2026-09-18,24,72.46,104.1,350.8,166.2,195.0,35.5,18.8,24
 cairo,Cairo,Cairo,cairo_giza,2026-09-18,24,12.18,16.3,21.58,62.3,68.0,28.2,8.0,1
 giza,Giza,Giza,cairo_giza,2026-09-18,24,12.18,16.3,21.58,62.3,68.0,28.1,8.4,1
-luxor,Luxor,Luxor,luxor,2026-09-18,24,74.3,99.7,351.77,148.3,195.0,33.9,10.5,24
+luxor,Luxor,Luxor,luxor,2026-09-18,24,73.04,99.7,349.45,147.9,194.0,33.9,10.6,24
 mansoura,Mansoura,Dakahlia,mansoura,2026-09-18,24,8.31,11.1,17.48,49.8,57.0,26.3,10.3,0
 port_said,Port Said,Port Said,port_said,2026-09-18,24,9.88,13.1,19.77,53.4,55.0,27.1,17.4,0
 suez,Suez,Suez,suez,2026-09-18,24,10.6,18.9,26.3,60.8,75.0,29.0,12.3,2
-alexandria,Alexandria,Alexandria,alexandria,2026-09-19,12,7.26,7.8,13.28,47.1,50.0,26.0,6.5,0
-aswan,Aswan,Aswan,aswan,2026-09-19,12,74.15,107.8,347.85,209.7,227.0,31.6,17.7,12
-cairo,Cairo,Cairo,cairo_giza,2026-09-19,12,16.12,20.9,27.9,58.2,59.0,26.1,5.5,7
-giza,Giza,Giza,cairo_giza,2026-09-19,12,16.12,20.9,27.9,58.2,59.0,26.0,6.4,7
-mansoura,Mansoura,Dakahlia,mansoura,2026-09-19,12,9.43,13.2,17.73,49.4,51.0,24.8,6.6,0
-port_said,Port Said,Port Said,port_said,2026-09-19,12,8.29,9.5,16.8,51.9,53.0,25.7,9.7,0
-suez,Suez,Suez,suez,2026-09-19,12,9.3,11.0,14.76,51.1,53.0,27.0,9.7,0
+alexandria,Alexandria,Alexandria,alexandria,2026-09-19,16,6.97,7.7,12.51,45.7,50.0,26.5,8.2,0
+aswan,Aswan,Aswan,aswan,2026-09-19,16,65.24,107.8,322.36,204.9,227.0,33.4,17.6,16
+cairo,Cairo,Cairo,cairo_giza,2026-09-19,16,14.95,18.9,24.4,57.8,59.0,27.4,6.4,7
+giza,Giza,Giza,cairo_giza,2026-09-19,16,14.95,18.9,24.4,57.8,59.0,27.3,7.3,7
+luxor,Luxor,Luxor,luxor,2026-09-19,16,33.86,68.7,165.18,177.3,200.0,32.0,9.7,16
+mansoura,Mansoura,Dakahlia,mansoura,2026-09-19,16,8.55,13.2,15.88,49.3,51.0,26.5,8.1,0
+port_said,Port Said,Port Said,port_said,2026-09-19,16,8.1,10.5,16.21,51.6,53.0,26.3,11.4,0
+suez,Suez,Suez,suez,2026-09-19,16,9.74,11.6,16.27,52.0,65.0,27.9,10.7,0
