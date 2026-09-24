@@ -1,5 +1,5 @@
 city_name,aqi_grid,hour_of_day_local,avg_pm2_5,avg_us_aqi,sample_size
-Alexandria,alexandria,0,13.14,59.3,56
+Alexandria,alexandria,0,13.06,59.2,57
 Alexandria,alexandria,1,13.16,59.3,56
 Alexandria,alexandria,2,13.17,59.3,56
 Alexandria,alexandria,3,13.22,59.5,57
@@ -20,10 +20,10 @@ Alexandria,alexandria,17,13.08,59.2,57
 Alexandria,alexandria,18,12.77,59.2,57
 Alexandria,alexandria,19,12.75,59.2,57
 Alexandria,alexandria,20,12.81,59.3,57
-Alexandria,alexandria,21,12.88,59.3,56
-Alexandria,alexandria,22,13.1,59.3,56
-Alexandria,alexandria,23,13.11,59.3,56
-Aswan,aswan,0,50.08,133.7,56
+Alexandria,alexandria,21,12.81,59.2,57
+Alexandria,alexandria,22,13.04,59.2,57
+Alexandria,alexandria,23,13.05,59.2,57
+Aswan,aswan,0,51.18,135.3,57
 Aswan,aswan,1,56.47,133.8,56
 Aswan,aswan,2,61.08,133.9,56
 Aswan,aswan,3,65.51,134.7,57
@@ -44,10 +44,10 @@ Aswan,aswan,17,31.49,135.3,57
 Aswan,aswan,18,31.85,135.4,57
 Aswan,aswan,19,32.9,135.3,57
 Aswan,aswan,20,33.54,135.1,57
-Aswan,aswan,21,34.74,133.9,56
-Aswan,aswan,22,37.98,133.8,56
-Aswan,aswan,23,43.3,133.6,56
-Cairo,cairo_giza,0,16.54,69.2,56
+Aswan,aswan,21,35.25,135.1,57
+Aswan,aswan,22,38.61,135.1,57
+Aswan,aswan,23,44.13,135.1,57
+Cairo,cairo_giza,0,16.49,69.1,57
 Cairo,cairo_giza,1,17.02,69.2,56
 Cairo,cairo_giza,2,17.87,69.2,56
 Cairo,cairo_giza,3,18.48,69.2,57
@@ -68,10 +68,10 @@ Cairo,cairo_giza,17,16.59,69.1,57
 Cairo,cairo_giza,18,16.04,71.0,57
 Cairo,cairo_giza,19,16.57,74.8,57
 Cairo,cairo_giza,20,17.15,76.9,57
-Cairo,cairo_giza,21,16.72,75.5,56
-Cairo,cairo_giza,22,16.21,72.4,56
-Cairo,cairo_giza,23,16.43,69.8,56
-Giza,cairo_giza,0,16.54,69.2,56
+Cairo,cairo_giza,21,16.64,75.3,57
+Cairo,cairo_giza,22,16.14,72.2,57
+Cairo,cairo_giza,23,16.38,69.6,57
+Giza,cairo_giza,0,16.49,69.1,57
 Giza,cairo_giza,1,17.02,69.2,56
 Giza,cairo_giza,2,17.87,69.2,56
 Giza,cairo_giza,3,18.48,69.2,57
@@ -92,10 +92,10 @@ Giza,cairo_giza,17,16.59,69.1,57
 Giza,cairo_giza,18,16.04,71.0,57
 Giza,cairo_giza,19,16.57,74.8,57
 Giza,cairo_giza,20,17.15,76.9,57
-Giza,cairo_giza,21,16.72,75.5,56
-Giza,cairo_giza,22,16.21,72.4,56
-Giza,cairo_giza,23,16.43,69.8,56
-Luxor,luxor,0,78.74,145.0,56
+Giza,cairo_giza,21,16.64,75.3,57
+Giza,cairo_giza,22,16.14,72.2,57
+Giza,cairo_giza,23,16.38,69.6,57
+Luxor,luxor,0,78.81,145.1,57
 Luxor,luxor,1,79.28,145.1,56
 Luxor,luxor,2,77.41,145.2,56
 Luxor,luxor,3,76.36,145.9,57
@@ -116,10 +116,10 @@ Luxor,luxor,17,35.1,144.1,57
 Luxor,luxor,18,39.97,144.5,57
 Luxor,luxor,19,44.04,144.7,57
 Luxor,luxor,20,49.09,144.7,57
-Luxor,luxor,21,57.06,144.6,56
-Luxor,luxor,22,66.48,144.8,56
-Luxor,luxor,23,74.38,144.9,56
-Mansoura,mansoura,0,13.84,58.4,56
+Luxor,luxor,21,57.31,144.8,57
+Luxor,luxor,22,66.76,145.0,57
+Luxor,luxor,23,74.61,145.0,57
+Mansoura,mansoura,0,13.78,58.4,57
 Mansoura,mansoura,1,14.5,58.4,56
 Mansoura,mansoura,2,14.98,58.4,56
 Mansoura,mansoura,3,15.42,58.4,57
@@ -140,10 +140,10 @@ Mansoura,mansoura,17,10.81,58.9,57
 Mansoura,mansoura,18,10.79,60.3,57
 Mansoura,mansoura,19,10.73,61.5,57
 Mansoura,mansoura,20,11.39,61.4,57
-Mansoura,mansoura,21,12.09,60.5,56
-Mansoura,mansoura,22,12.57,59.5,56
-Mansoura,mansoura,23,13.15,58.7,56
-Port Said,port_said,0,11.9,58.3,56
+Mansoura,mansoura,21,12.04,60.4,57
+Mansoura,mansoura,22,12.52,59.4,57
+Mansoura,mansoura,23,13.11,58.7,57
+Port Said,port_said,0,11.82,58.2,57
 Port Said,port_said,1,12.03,58.0,56
 Port Said,port_said,2,12.24,58.0,56
 Port Said,port_said,3,12.64,58.3,57
@@ -164,10 +164,10 @@ Port Said,port_said,17,12.29,59.9,57
 Port Said,port_said,18,12.06,62.9,57
 Port Said,port_said,19,11.92,65.4,57
 Port Said,port_said,20,11.89,65.8,57
-Port Said,port_said,21,11.86,64.5,56
-Port Said,port_said,22,11.76,61.8,56
-Port Said,port_said,23,11.81,59.6,56
-Suez,suez,0,13.13,73.8,56
+Port Said,port_said,21,11.78,64.3,57
+Port Said,port_said,22,11.68,61.6,57
+Port Said,port_said,23,11.74,59.5,57
+Suez,suez,0,13.14,73.5,57
 Suez,suez,1,12.76,65.3,56
 Suez,suez,2,12.32,61.4,56
 Suez,suez,3,11.95,60.4,57
@@ -188,6 +188,6 @@ Suez,suez,17,16.14,75.5,57
 Suez,suez,18,15.52,87.6,57
 Suez,suez,19,15.14,96.2,57
 Suez,suez,20,14.98,99.1,57
-Suez,suez,21,14.71,97.3,56
-Suez,suez,22,14.09,91.3,56
-Suez,suez,23,13.52,82.9,56
+Suez,suez,21,14.72,96.8,57
+Suez,suez,22,14.11,90.8,57
+Suez,suez,23,13.54,82.4,57
