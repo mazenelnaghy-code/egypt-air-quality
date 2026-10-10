@@ -567,11 +567,18 @@ luxor,Luxor,Luxor,luxor,2026-10-08,24,50.28,106.6,206.35,114.3,134.0,28.4,6.1,24
 mansoura,Mansoura,Dakahlia,mansoura,2026-10-08,24,9.98,13.2,17.05,53.7,55.0,22.9,8.1,0
 port_said,Port Said,Port Said,port_said,2026-10-08,24,6.98,8.2,11.05,41.5,44.0,25.0,11.8,0
 suez,Suez,Suez,suez,2026-10-08,24,8.68,12.0,21.77,44.0,48.0,25.6,12.2,0
-alexandria,Alexandria,Alexandria,alexandria,2026-10-09,23,7.68,8.9,13.57,45.4,50.0,23.4,10.4,0
-aswan,Aswan,Aswan,aswan,2026-10-09,23,94.17,166.2,371.54,205.3,238.0,30.6,17.9,23
-cairo,Cairo,Cairo,cairo_giza,2026-10-09,23,14.4,20.9,20.98,62.4,66.0,24.4,10.0,7
-giza,Giza,Giza,cairo_giza,2026-10-09,23,14.4,20.9,20.98,62.4,66.0,24.4,10.0,7
-luxor,Luxor,Luxor,luxor,2026-10-09,23,66.59,126.2,249.8,154.8,159.0,28.6,5.9,23
-mansoura,Mansoura,Dakahlia,mansoura,2026-10-09,23,8.15,10.1,13.7,48.6,52.0,23.3,9.2,0
-port_said,Port Said,Port Said,port_said,2026-10-09,23,7.83,8.9,13.9,41.9,45.0,25.4,13.8,0
-suez,Suez,Suez,suez,2026-10-09,23,12.04,17.8,28.1,51.7,55.0,25.6,12.2,6
+alexandria,Alexandria,Alexandria,alexandria,2026-10-09,24,7.68,8.9,13.57,45.3,50.0,23.4,10.1,0
+aswan,Aswan,Aswan,aswan,2026-10-09,24,97.45,172.8,385.4,206.8,241.0,30.6,17.6,24
+cairo,Cairo,Cairo,cairo_giza,2026-10-09,24,14.4,20.9,20.98,62.3,66.0,24.2,9.9,7
+giza,Giza,Giza,cairo_giza,2026-10-09,24,14.4,20.9,20.98,62.3,66.0,24.2,9.9,7
+luxor,Luxor,Luxor,luxor,2026-10-09,24,69.08,126.2,260.27,155.0,159.0,28.5,5.9,24
+mansoura,Mansoura,Dakahlia,mansoura,2026-10-09,24,8.19,10.1,13.8,48.5,52.0,23.1,9.1,0
+port_said,Port Said,Port Said,port_said,2026-10-09,24,7.81,8.9,13.85,42.0,45.0,25.3,13.7,0
+suez,Suez,Suez,suez,2026-10-09,24,12.2,17.8,28.26,51.9,56.0,25.6,12.1,7
+alexandria,Alexandria,Alexandria,alexandria,2026-10-10,6,7.6,7.7,13.75,43.0,43.0,21.8,5.6,0
+aswan,Aswan,Aswan,aswan,2026-10-10,6,131.05,169.0,448.43,234.8,244.0,25.2,17.7,6
+cairo,Cairo,Cairo,cairo_giza,2026-10-10,6,15.5,16.3,22.67,59.8,60.0,20.0,7.1,4
+giza,Giza,Giza,cairo_giza,2026-10-10,6,15.5,16.3,22.67,59.8,60.0,20.0,7.1,4
+mansoura,Mansoura,Dakahlia,mansoura,2026-10-10,6,8.52,9.0,14.93,45.0,45.0,19.4,5.8,0
+port_said,Port Said,Port Said,port_said,2026-10-10,6,6.6,6.9,12.12,42.5,43.0,24.0,12.1,0
+suez,Suez,Suez,suez,2026-10-10,6,13.22,15.1,23.6,57.0,58.0,22.7,10.2,1
