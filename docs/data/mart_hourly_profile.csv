@@ -19,10 +19,10 @@ Alexandria,alexandria,16,11.83,55.3,88
 Alexandria,alexandria,17,11.48,55.3,88
 Alexandria,alexandria,18,11.25,55.3,88
 Alexandria,alexandria,19,11.29,55.4,88
-Alexandria,alexandria,20,11.38,55.5,87
-Alexandria,alexandria,21,11.36,55.4,87
-Alexandria,alexandria,22,11.56,55.4,87
-Alexandria,alexandria,23,11.66,55.4,87
+Alexandria,alexandria,20,11.33,55.4,88
+Alexandria,alexandria,21,11.3,55.4,88
+Alexandria,alexandria,22,11.51,55.3,88
+Alexandria,alexandria,23,11.6,55.3,88
 Aswan,aswan,0,64.81,155.7,87
 Aswan,aswan,1,74.17,156.0,87
 Aswan,aswan,2,79.99,156.1,87
@@ -43,10 +43,10 @@ Aswan,aswan,16,33.62,155.6,88
 Aswan,aswan,17,33.11,155.6,88
 Aswan,aswan,18,33.48,155.6,88
 Aswan,aswan,19,35.08,155.6,88
-Aswan,aswan,20,36.72,155.9,87
-Aswan,aswan,21,39.61,155.9,87
-Aswan,aswan,22,45.22,155.9,87
-Aswan,aswan,23,54.12,155.7,87
+Aswan,aswan,20,36.54,155.4,88
+Aswan,aswan,21,39.4,155.4,88
+Aswan,aswan,22,44.95,155.4,88
+Aswan,aswan,23,53.74,155.2,88
 Cairo,cairo_giza,0,16.89,68.0,87
 Cairo,cairo_giza,1,17.47,68.0,87
 Cairo,cairo_giza,2,18.26,68.0,87
@@ -67,10 +67,10 @@ Cairo,cairo_giza,16,16.43,68.2,88
 Cairo,cairo_giza,17,15.6,68.1,88
 Cairo,cairo_giza,18,15.41,69.4,88
 Cairo,cairo_giza,19,16.59,71.8,88
-Cairo,cairo_giza,20,17.38,73.2,87
-Cairo,cairo_giza,21,17.06,72.1,87
-Cairo,cairo_giza,22,16.63,70.1,87
-Cairo,cairo_giza,23,16.67,68.4,87
+Cairo,cairo_giza,20,17.47,73.2,88
+Cairo,cairo_giza,21,17.1,72.1,88
+Cairo,cairo_giza,22,16.65,70.1,88
+Cairo,cairo_giza,23,16.68,68.5,88
 Giza,cairo_giza,0,16.89,68.0,87
 Giza,cairo_giza,1,17.47,68.0,87
 Giza,cairo_giza,2,18.26,68.0,87
@@ -91,10 +91,10 @@ Giza,cairo_giza,16,16.43,68.2,88
 Giza,cairo_giza,17,15.6,68.1,88
 Giza,cairo_giza,18,15.41,69.4,88
 Giza,cairo_giza,19,16.59,71.8,88
-Giza,cairo_giza,20,17.38,73.2,87
-Giza,cairo_giza,21,17.06,72.1,87
-Giza,cairo_giza,22,16.63,70.1,87
-Giza,cairo_giza,23,16.67,68.4,87
+Giza,cairo_giza,20,17.47,73.2,88
+Giza,cairo_giza,21,17.1,72.1,88
+Giza,cairo_giza,22,16.65,70.1,88
+Giza,cairo_giza,23,16.68,68.5,88
 Luxor,luxor,0,80.51,144.0,87
 Luxor,luxor,1,79.96,144.1,87
 Luxor,luxor,2,77.28,144.1,87
@@ -115,10 +115,10 @@ Luxor,luxor,16,30.39,143.1,88
 Luxor,luxor,17,34.26,143.2,88
 Luxor,luxor,18,39.01,143.4,88
 Luxor,luxor,19,43.15,143.4,88
-Luxor,luxor,20,49.56,143.6,87
-Luxor,luxor,21,58.9,143.7,87
-Luxor,luxor,22,69.24,143.7,87
-Luxor,luxor,23,77.14,143.8,87
+Luxor,luxor,20,49.27,143.4,88
+Luxor,luxor,21,58.57,143.4,88
+Luxor,luxor,22,68.83,143.5,88
+Luxor,luxor,23,76.64,143.6,88
 Mansoura,mansoura,0,13.1,56.2,87
 Mansoura,mansoura,1,13.69,56.2,87
 Mansoura,mansoura,2,14.1,56.3,87
@@ -139,10 +139,10 @@ Mansoura,mansoura,16,10.08,56.3,88
 Mansoura,mansoura,17,9.85,56.5,88
 Mansoura,mansoura,18,9.9,57.5,88
 Mansoura,mansoura,19,10.0,58.3,88
-Mansoura,mansoura,20,10.62,58.2,87
-Mansoura,mansoura,21,11.22,57.6,87
-Mansoura,mansoura,22,11.79,56.9,87
-Mansoura,mansoura,23,12.37,56.4,87
+Mansoura,mansoura,20,10.62,58.2,88
+Mansoura,mansoura,21,11.22,57.6,88
+Mansoura,mansoura,22,11.78,56.9,88
+Mansoura,mansoura,23,12.38,56.4,88
 Port Said,port_said,0,10.56,54.6,87
 Port Said,port_said,1,10.74,54.4,87
 Port Said,port_said,2,10.96,54.3,87
@@ -163,10 +163,10 @@ Port Said,port_said,16,11.31,54.8,88
 Port Said,port_said,17,11.11,55.9,88
 Port Said,port_said,18,10.82,58.0,88
 Port Said,port_said,19,10.59,59.6,88
-Port Said,port_said,20,10.44,60.0,87
-Port Said,port_said,21,10.28,59.0,87
-Port Said,port_said,22,10.27,57.1,87
-Port Said,port_said,23,10.39,55.6,87
+Port Said,port_said,20,10.43,59.9,88
+Port Said,port_said,21,10.28,58.9,88
+Port Said,port_said,22,10.27,57.1,88
+Port Said,port_said,23,10.39,55.6,88
 Suez,suez,0,12.62,67.8,87
 Suez,suez,1,12.1,62.1,87
 Suez,suez,2,11.55,59.6,87
@@ -187,7 +187,7 @@ Suez,suez,16,16.56,61.7,88
 Suez,suez,17,15.82,69.1,88
 Suez,suez,18,15.12,77.9,88
 Suez,suez,19,14.67,85.0,88
-Suez,suez,20,14.53,88.0,87
-Suez,suez,21,14.31,86.0,87
-Suez,suez,22,13.76,81.1,87
-Suez,suez,23,13.15,74.5,87
+Suez,suez,20,14.54,87.7,88
+Suez,suez,21,14.31,85.8,88
+Suez,suez,22,13.76,80.8,88
+Suez,suez,23,13.14,74.3,88
