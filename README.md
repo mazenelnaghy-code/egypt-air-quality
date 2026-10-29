@@ -247,4 +247,5 @@ Python · DuckDB · SQL · GitHub Actions · GitHub Pages · Chart.js
 Weather and air quality data by [Open-Meteo.com](https://open-meteo.com),
 licensed under CC BY 4.0.
 
-Built by Mazen Elnaghy.
+Built by [Mazen Elnaghy](https://github.com/mazenelnaghy-code). Need a data pipeline or a dashboard like this one?
+[Hire me on Upwork](https://www.upwork.com/freelancers/~01b6c711b0162ca691) or [email me](mailto:mazen.elnaghy@gmail.com).
