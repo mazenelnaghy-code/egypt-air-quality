@@ -1,12 +1,12 @@
 city_name,aqi_grid,hour_of_day_local,avg_pm2_5,avg_us_aqi,sample_size
 Alexandria,alexandria,0,11.86,55.5,93
-Alexandria,alexandria,1,11.83,55.7,92
-Alexandria,alexandria,2,11.87,55.6,92
-Alexandria,alexandria,3,11.92,55.8,93
-Alexandria,alexandria,4,12.22,55.8,93
-Alexandria,alexandria,5,12.26,55.8,93
-Alexandria,alexandria,6,12.54,55.8,93
-Alexandria,alexandria,7,13.26,55.8,93
+Alexandria,alexandria,1,11.82,55.5,93
+Alexandria,alexandria,2,11.88,55.5,93
+Alexandria,alexandria,3,11.94,55.6,94
+Alexandria,alexandria,4,12.24,55.6,94
+Alexandria,alexandria,5,12.3,55.6,94
+Alexandria,alexandria,6,12.58,55.7,94
+Alexandria,alexandria,7,13.26,55.7,94
 Alexandria,alexandria,8,13.48,55.8,93
 Alexandria,alexandria,9,13.79,55.8,93
 Alexandria,alexandria,10,13.87,56.9,93
@@ -23,38 +23,38 @@ Alexandria,alexandria,20,11.42,55.7,93
 Alexandria,alexandria,21,11.44,55.6,93
 Alexandria,alexandria,22,11.63,55.6,93
 Alexandria,alexandria,23,11.72,55.6,94
-Aswan,aswan,0,63.97,154.9,92
-Aswan,aswan,1,73.23,155.0,92
-Aswan,aswan,2,79.45,155.7,91
-Aswan,aswan,3,83.52,155.9,92
-Aswan,aswan,4,83.17,156.0,92
-Aswan,aswan,5,80.91,156.1,92
-Aswan,aswan,6,77.65,156.1,92
-Aswan,aswan,7,73.91,155.9,92
-Aswan,aswan,8,69.57,155.9,92
-Aswan,aswan,9,66.26,155.5,92
-Aswan,aswan,10,60.85,155.3,92
-Aswan,aswan,11,52.9,155.1,92
-Aswan,aswan,12,46.73,155.0,92
-Aswan,aswan,13,42.33,154.9,92
-Aswan,aswan,14,39.18,154.9,92
-Aswan,aswan,15,35.13,154.9,92
-Aswan,aswan,16,33.51,155.1,92
-Aswan,aswan,17,32.98,155.1,92
-Aswan,aswan,18,33.27,155.2,92
-Aswan,aswan,19,34.74,155.2,92
-Aswan,aswan,20,36.09,155.1,92
-Aswan,aswan,21,38.84,155.2,92
-Aswan,aswan,22,44.37,155.1,92
-Aswan,aswan,23,52.85,154.1,93
+Aswan,aswan,0,63.74,154.4,93
+Aswan,aswan,1,73.03,154.5,93
+Aswan,aswan,2,78.76,154.4,93
+Aswan,aswan,3,82.83,154.6,94
+Aswan,aswan,4,82.49,154.8,94
+Aswan,aswan,5,80.26,154.9,94
+Aswan,aswan,6,77.05,154.9,94
+Aswan,aswan,7,73.37,154.8,94
+Aswan,aswan,8,69.3,155.2,93
+Aswan,aswan,9,66.05,154.8,93
+Aswan,aswan,10,60.67,154.6,93
+Aswan,aswan,11,52.74,154.4,93
+Aswan,aswan,12,46.61,154.4,93
+Aswan,aswan,13,42.23,154.3,93
+Aswan,aswan,14,39.03,154.3,93
+Aswan,aswan,15,35.01,154.4,93
+Aswan,aswan,16,33.41,154.5,93
+Aswan,aswan,17,32.88,154.6,93
+Aswan,aswan,18,33.16,154.7,93
+Aswan,aswan,19,34.61,154.7,93
+Aswan,aswan,20,35.95,154.6,93
+Aswan,aswan,21,38.68,154.6,93
+Aswan,aswan,22,44.17,154.6,93
+Aswan,aswan,23,52.61,153.6,94
 Cairo,cairo_giza,0,17.31,68.5,93
-Cairo,cairo_giza,1,17.89,68.5,92
-Cairo,cairo_giza,2,18.56,68.5,92
-Cairo,cairo_giza,3,19.0,68.5,93
-Cairo,cairo_giza,4,20.18,68.5,93
-Cairo,cairo_giza,5,21.13,68.5,93
-Cairo,cairo_giza,6,22.3,68.5,93
-Cairo,cairo_giza,7,23.41,68.5,93
+Cairo,cairo_giza,1,17.94,68.4,93
+Cairo,cairo_giza,2,18.63,68.5,93
+Cairo,cairo_giza,3,19.06,68.5,94
+Cairo,cairo_giza,4,20.19,68.5,94
+Cairo,cairo_giza,5,21.11,68.5,94
+Cairo,cairo_giza,6,22.27,68.5,94
+Cairo,cairo_giza,7,23.39,68.5,94
 Cairo,cairo_giza,8,23.23,68.5,93
 Cairo,cairo_giza,9,22.39,68.5,93
 Cairo,cairo_giza,10,20.36,68.5,93
@@ -72,13 +72,13 @@ Cairo,cairo_giza,21,17.47,72.2,93
 Cairo,cairo_giza,22,17.04,70.4,93
 Cairo,cairo_giza,23,17.16,69.0,94
 Giza,cairo_giza,0,17.31,68.5,93
-Giza,cairo_giza,1,17.89,68.5,92
-Giza,cairo_giza,2,18.56,68.5,92
-Giza,cairo_giza,3,19.0,68.5,93
-Giza,cairo_giza,4,20.18,68.5,93
-Giza,cairo_giza,5,21.13,68.5,93
-Giza,cairo_giza,6,22.3,68.5,93
-Giza,cairo_giza,7,23.41,68.5,93
+Giza,cairo_giza,1,17.94,68.4,93
+Giza,cairo_giza,2,18.63,68.5,93
+Giza,cairo_giza,3,19.06,68.5,94
+Giza,cairo_giza,4,20.19,68.5,94
+Giza,cairo_giza,5,21.11,68.5,94
+Giza,cairo_giza,6,22.27,68.5,94
+Giza,cairo_giza,7,23.39,68.5,94
 Giza,cairo_giza,8,23.23,68.5,93
 Giza,cairo_giza,9,22.39,68.5,93
 Giza,cairo_giza,10,20.36,68.5,93
@@ -96,13 +96,13 @@ Giza,cairo_giza,21,17.47,72.2,93
 Giza,cairo_giza,22,17.04,70.4,93
 Giza,cairo_giza,23,17.16,69.0,94
 Luxor,luxor,0,79.76,143.8,93
-Luxor,luxor,1,79.4,143.9,92
-Luxor,luxor,2,76.8,144.0,92
-Luxor,luxor,3,74.43,144.4,93
-Luxor,luxor,4,71.45,144.3,93
-Luxor,luxor,5,67.98,144.4,93
-Luxor,luxor,6,65.05,144.4,93
-Luxor,luxor,7,62.77,144.3,93
+Luxor,luxor,1,79.17,143.8,93
+Luxor,luxor,2,76.57,143.9,93
+Luxor,luxor,3,74.2,144.3,94
+Luxor,luxor,4,71.23,144.3,94
+Luxor,luxor,5,67.78,144.3,94
+Luxor,luxor,6,64.87,144.3,94
+Luxor,luxor,7,62.61,144.2,94
 Luxor,luxor,8,59.64,144.3,93
 Luxor,luxor,9,53.83,144.2,93
 Luxor,luxor,10,43.62,144.0,93
@@ -120,13 +120,13 @@ Luxor,luxor,21,58.66,143.7,93
 Luxor,luxor,22,68.87,143.6,93
 Luxor,luxor,23,76.31,143.2,94
 Mansoura,mansoura,0,13.39,56.6,93
-Mansoura,mansoura,1,13.96,56.6,92
-Mansoura,mansoura,2,14.42,56.7,92
-Mansoura,mansoura,3,14.86,56.7,93
-Mansoura,mansoura,4,15.62,56.8,93
-Mansoura,mansoura,5,16.53,56.8,93
-Mansoura,mansoura,6,17.23,56.8,93
-Mansoura,mansoura,7,16.85,56.8,93
+Mansoura,mansoura,1,13.96,56.6,93
+Mansoura,mansoura,2,14.42,56.7,93
+Mansoura,mansoura,3,14.86,56.7,94
+Mansoura,mansoura,4,15.63,56.8,94
+Mansoura,mansoura,5,16.54,56.7,94
+Mansoura,mansoura,6,17.23,56.8,94
+Mansoura,mansoura,7,16.88,56.8,94
 Mansoura,mansoura,8,15.5,56.8,93
 Mansoura,mansoura,9,13.6,56.8,93
 Mansoura,mansoura,10,12.36,56.8,93
@@ -144,13 +144,13 @@ Mansoura,mansoura,21,11.4,57.9,93
 Mansoura,mansoura,22,12.01,57.3,93
 Mansoura,mansoura,23,12.62,57.0,94
 Port Said,port_said,0,10.52,54.8,93
-Port Said,port_said,1,10.74,54.6,92
-Port Said,port_said,2,11.0,54.6,92
-Port Said,port_said,3,11.33,54.6,93
-Port Said,port_said,4,11.94,54.6,93
-Port Said,port_said,5,12.52,54.4,93
-Port Said,port_said,6,13.11,54.4,93
-Port Said,port_said,7,13.55,54.3,93
+Port Said,port_said,1,10.7,54.6,93
+Port Said,port_said,2,10.96,54.5,93
+Port Said,port_said,3,11.29,54.6,94
+Port Said,port_said,4,11.9,54.6,94
+Port Said,port_said,5,12.48,54.4,94
+Port Said,port_said,6,13.1,54.3,94
+Port Said,port_said,7,13.51,54.3,94
 Port Said,port_said,8,13.2,54.3,93
 Port Said,port_said,9,12.82,54.3,93
 Port Said,port_said,10,12.76,54.4,93
@@ -168,13 +168,13 @@ Port Said,port_said,21,10.26,58.9,93
 Port Said,port_said,22,10.22,57.2,93
 Port Said,port_said,23,10.31,55.8,94
 Suez,suez,0,12.89,67.7,93
-Suez,suez,1,12.3,62.3,92
-Suez,suez,2,11.76,59.9,92
-Suez,suez,3,11.38,59.3,93
-Suez,suez,4,11.1,59.2,93
-Suez,suez,5,10.92,59.2,93
-Suez,suez,6,10.98,59.2,93
-Suez,suez,7,11.39,59.2,93
+Suez,suez,1,12.35,62.3,93
+Suez,suez,2,11.81,60.0,93
+Suez,suez,3,11.41,59.4,94
+Suez,suez,4,11.12,59.3,94
+Suez,suez,5,10.94,59.3,94
+Suez,suez,6,10.99,59.3,94
+Suez,suez,7,11.4,59.3,94
 Suez,suez,8,12.09,59.3,93
 Suez,suez,9,13.76,59.3,93
 Suez,suez,10,15.01,59.3,93
