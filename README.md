@@ -6,6 +6,8 @@ republishes a dashboard — every six hours, without a server.
 
 **Live dashboard:** https://mazenelnaghy-code.github.io/egypt-air-quality/
 
+![The live dashboard: the latest air quality for eight Egyptian cities, worst first](assets/dashboard.png)
+
 ---
 
 ## What it does
