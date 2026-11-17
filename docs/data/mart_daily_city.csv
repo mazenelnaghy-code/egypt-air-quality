@@ -871,11 +871,16 @@ luxor,Luxor,Luxor,luxor,2026-11-15,24,27.87,53.8,74.25,74.3,83.0,22.7,3.5,20
 mansoura,Mansoura,Dakahlia,mansoura,2026-11-15,24,13.86,20.2,19.22,59.8,61.0,20.5,6.1,9
 port_said,Port Said,Port Said,port_said,2026-11-15,24,10.15,14.5,17.13,57.9,61.0,21.9,8.6,0
 suez,Suez,Suez,suez,2026-11-15,24,16.22,22.1,33.88,68.3,70.0,21.9,13.7,13
-alexandria,Alexandria,Alexandria,alexandria,2026-11-16,23,20.5,38.3,36.11,67.2,102.0,20.3,5.6,13
-aswan,Aswan,Aswan,aswan,2026-11-16,23,23.92,32.9,74.2,77.8,81.0,25.0,11.6,23
-cairo,Cairo,Cairo,cairo_giza,2026-11-16,23,26.0,45.7,38.4,82.7,90.0,21.3,7.9,23
-giza,Giza,Giza,cairo_giza,2026-11-16,23,26.0,45.7,38.4,82.7,90.0,21.3,7.9,23
-luxor,Luxor,Luxor,luxor,2026-11-16,23,34.35,56.9,90.59,98.8,105.0,22.6,3.1,23
-mansoura,Mansoura,Dakahlia,mansoura,2026-11-16,23,14.27,19.9,26.23,58.4,60.0,20.3,4.2,13
-port_said,Port Said,Port Said,port_said,2026-11-16,23,7.53,10.6,17.79,41.6,52.0,21.6,6.2,0
-suez,Suez,Suez,suez,2026-11-16,23,11.74,15.3,23.13,57.0,64.0,21.6,13.4,3
+alexandria,Alexandria,Alexandria,alexandria,2026-11-16,24,20.27,38.3,35.55,67.3,102.0,20.3,5.6,13
+aswan,Aswan,Aswan,aswan,2026-11-16,24,23.72,32.9,72.65,77.8,81.0,24.8,11.6,24
+cairo,Cairo,Cairo,cairo_giza,2026-11-16,24,26.12,45.7,38.38,82.6,90.0,21.1,7.8,24
+giza,Giza,Giza,cairo_giza,2026-11-16,24,26.12,45.7,38.38,82.6,90.0,21.1,7.8,24
+luxor,Luxor,Luxor,luxor,2026-11-16,24,34.47,56.9,91.33,98.8,105.0,22.8,2.6,24
+mansoura,Mansoura,Dakahlia,mansoura,2026-11-16,24,14.56,21.1,26.3,58.5,60.0,20.2,4.1,14
+port_said,Port Said,Port Said,port_said,2026-11-16,24,7.67,11.0,17.95,41.6,52.0,21.5,6.0,0
+suez,Suez,Suez,suez,2026-11-16,24,11.61,15.3,22.73,57.0,64.0,21.6,13.3,3
+aswan,Aswan,Aswan,aswan,2026-11-17,9,23.5,27.0,75.66,74.9,78.0,20.7,11.7,9
+luxor,Luxor,Luxor,luxor,2026-11-17,9,48.83,57.9,141.64,96.4,98.0,18.2,2.1,9
+mansoura,Mansoura,Dakahlia,mansoura,2026-11-17,9,22.02,24.4,30.8,62.2,64.0,16.6,4.2,9
+port_said,Port Said,Port Said,port_said,2026-11-17,9,14.31,17.4,24.3,48.2,53.0,18.8,6.8,4
+suez,Suez,Suez,suez,2026-11-17,9,9.46,10.2,16.3,54.8,55.0,18.6,12.5,0

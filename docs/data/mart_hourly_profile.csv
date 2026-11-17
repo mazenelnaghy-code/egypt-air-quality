@@ -1,6 +1,6 @@
 city_name,aqi_grid,hour_of_day_local,avg_pm2_5,avg_us_aqi,sample_size
 Alexandria,alexandria,0,11.57,55.2,110
-Alexandria,alexandria,1,11.58,55.1,109
+Alexandria,alexandria,1,11.61,55.2,110
 Alexandria,alexandria,2,11.71,55.0,109
 Alexandria,alexandria,3,11.88,55.2,110
 Alexandria,alexandria,4,12.17,55.2,110
@@ -24,16 +24,16 @@ Alexandria,alexandria,21,11.29,55.3,110
 Alexandria,alexandria,22,11.35,55.2,110
 Alexandria,alexandria,23,11.43,55.3,111
 Aswan,aswan,0,60.76,147.1,110
-Aswan,aswan,1,69.52,147.9,109
-Aswan,aswan,2,74.66,147.7,109
-Aswan,aswan,3,78.19,148.0,110
-Aswan,aswan,4,77.76,148.0,110
-Aswan,aswan,5,75.63,148.1,110
-Aswan,aswan,6,72.64,148.1,110
-Aswan,aswan,7,69.24,148.0,110
-Aswan,aswan,8,65.24,147.9,110
-Aswan,aswan,9,61.98,147.6,110
-Aswan,aswan,10,56.6,147.4,110
+Aswan,aswan,1,69.06,147.3,110
+Aswan,aswan,2,74.16,147.1,110
+Aswan,aswan,3,77.66,147.3,111
+Aswan,aswan,4,77.25,147.4,111
+Aswan,aswan,5,75.15,147.4,111
+Aswan,aswan,6,72.2,147.4,111
+Aswan,aswan,7,68.85,147.3,111
+Aswan,aswan,8,64.88,147.2,111
+Aswan,aswan,9,61.66,147.0,111
+Aswan,aswan,10,56.34,146.7,111
 Aswan,aswan,11,49.26,147.2,110
 Aswan,aswan,12,43.58,147.1,110
 Aswan,aswan,13,39.52,147.0,110
@@ -48,7 +48,7 @@ Aswan,aswan,21,37.57,147.2,110
 Aswan,aswan,22,42.99,147.2,110
 Aswan,aswan,23,50.84,146.5,111
 Cairo,cairo_giza,0,18.21,69.0,110
-Cairo,cairo_giza,1,18.42,68.9,109
+Cairo,cairo_giza,1,18.51,69.0,110
 Cairo,cairo_giza,2,18.98,68.9,109
 Cairo,cairo_giza,3,19.49,68.9,110
 Cairo,cairo_giza,4,20.46,68.9,110
@@ -72,7 +72,7 @@ Cairo,cairo_giza,21,18.63,72.2,110
 Cairo,cairo_giza,22,18.23,70.6,110
 Cairo,cairo_giza,23,18.19,69.4,111
 Giza,cairo_giza,0,18.21,69.0,110
-Giza,cairo_giza,1,18.42,68.9,109
+Giza,cairo_giza,1,18.51,69.0,110
 Giza,cairo_giza,2,18.98,68.9,109
 Giza,cairo_giza,3,19.49,68.9,110
 Giza,cairo_giza,4,20.46,68.9,110
@@ -96,16 +96,16 @@ Giza,cairo_giza,21,18.63,72.2,110
 Giza,cairo_giza,22,18.23,70.6,110
 Giza,cairo_giza,23,18.19,69.4,111
 Luxor,luxor,0,75.4,138.3,110
-Luxor,luxor,1,75.03,138.7,109
-Luxor,luxor,2,72.4,138.7,109
-Luxor,luxor,3,70.25,139.1,110
-Luxor,luxor,4,67.53,139.1,110
-Luxor,luxor,5,64.46,139.1,110
-Luxor,luxor,6,61.96,139.1,110
-Luxor,luxor,7,60.08,139.1,110
-Luxor,luxor,8,56.82,139.0,110
-Luxor,luxor,9,50.61,138.9,110
-Luxor,luxor,10,41.01,138.7,110
+Luxor,luxor,1,74.68,138.3,110
+Luxor,luxor,2,72.11,138.4,110
+Luxor,luxor,3,70.02,138.7,111
+Luxor,luxor,4,67.35,138.7,111
+Luxor,luxor,5,64.33,138.7,111
+Luxor,luxor,6,61.89,138.7,111
+Luxor,luxor,7,60.06,138.7,111
+Luxor,luxor,8,56.83,138.6,111
+Luxor,luxor,9,50.62,138.5,111
+Luxor,luxor,10,40.96,138.3,111
 Luxor,luxor,11,33.36,138.3,110
 Luxor,luxor,12,29.15,138.2,110
 Luxor,luxor,13,27.31,138.2,110
@@ -120,16 +120,16 @@ Luxor,luxor,21,56.6,138.2,110
 Luxor,luxor,22,65.96,138.2,110
 Luxor,luxor,23,72.58,137.8,111
 Mansoura,mansoura,0,13.82,56.4,110
-Mansoura,mansoura,1,14.23,56.4,109
-Mansoura,mansoura,2,14.7,56.4,109
-Mansoura,mansoura,3,15.14,56.4,110
-Mansoura,mansoura,4,15.73,56.5,110
-Mansoura,mansoura,5,16.5,56.5,110
-Mansoura,mansoura,6,17.09,56.6,110
-Mansoura,mansoura,7,16.56,56.5,110
-Mansoura,mansoura,8,15.34,56.5,110
-Mansoura,mansoura,9,13.44,56.5,110
-Mansoura,mansoura,10,12.05,56.5,110
+Mansoura,mansoura,1,14.29,56.4,110
+Mansoura,mansoura,2,14.76,56.5,110
+Mansoura,mansoura,3,15.21,56.5,111
+Mansoura,mansoura,4,15.79,56.6,111
+Mansoura,mansoura,5,16.55,56.6,111
+Mansoura,mansoura,6,17.14,56.6,111
+Mansoura,mansoura,7,16.61,56.6,111
+Mansoura,mansoura,8,15.41,56.6,111
+Mansoura,mansoura,9,13.54,56.6,111
+Mansoura,mansoura,10,12.09,56.6,111
 Mansoura,mansoura,11,11.15,56.5,110
 Mansoura,mansoura,12,10.91,56.5,110
 Mansoura,mansoura,13,10.72,56.5,110
@@ -144,16 +144,16 @@ Mansoura,mansoura,21,11.62,57.5,110
 Mansoura,mansoura,22,12.36,56.9,110
 Mansoura,mansoura,23,12.98,56.7,111
 Port Said,port_said,0,10.25,53.7,110
-Port Said,port_said,1,10.46,53.5,109
-Port Said,port_said,2,10.67,53.4,109
-Port Said,port_said,3,10.98,53.5,110
-Port Said,port_said,4,11.55,53.4,110
-Port Said,port_said,5,12.05,53.3,110
-Port Said,port_said,6,12.55,53.2,110
-Port Said,port_said,7,12.92,53.1,110
-Port Said,port_said,8,12.63,53.1,110
-Port Said,port_said,9,12.28,53.0,110
-Port Said,port_said,10,12.17,53.1,110
+Port Said,port_said,1,10.46,53.4,110
+Port Said,port_said,2,10.68,53.3,110
+Port Said,port_said,3,10.98,53.4,111
+Port Said,port_said,4,11.55,53.3,111
+Port Said,port_said,5,12.06,53.2,111
+Port Said,port_said,6,12.56,53.2,111
+Port Said,port_said,7,12.96,53.1,111
+Port Said,port_said,8,12.67,53.0,111
+Port Said,port_said,9,12.33,53.0,111
+Port Said,port_said,10,12.2,53.1,111
 Port Said,port_said,11,12.33,53.0,110
 Port Said,port_said,12,12.59,53.1,110
 Port Said,port_said,13,12.59,53.3,110
@@ -168,16 +168,16 @@ Port Said,port_said,21,9.99,57.2,110
 Port Said,port_said,22,9.96,55.7,110
 Port Said,port_said,23,10.03,54.6,111
 Suez,suez,0,12.9,66.3,110
-Suez,suez,1,12.44,61.9,109
-Suez,suez,2,11.94,59.9,109
-Suez,suez,3,11.67,59.4,110
-Suez,suez,4,11.42,59.3,110
-Suez,suez,5,11.29,59.3,110
-Suez,suez,6,11.44,59.3,110
-Suez,suez,7,11.9,59.3,110
-Suez,suez,8,12.42,59.4,110
-Suez,suez,9,13.79,59.4,110
-Suez,suez,10,14.86,59.4,110
+Suez,suez,1,12.41,61.8,110
+Suez,suez,2,11.91,59.8,110
+Suez,suez,3,11.65,59.3,111
+Suez,suez,4,11.4,59.2,111
+Suez,suez,5,11.28,59.3,111
+Suez,suez,6,11.43,59.2,111
+Suez,suez,7,11.89,59.3,111
+Suez,suez,8,12.4,59.3,111
+Suez,suez,9,13.75,59.3,111
+Suez,suez,10,14.82,59.3,111
 Suez,suez,11,15.99,59.4,110
 Suez,suez,12,16.66,59.4,110
 Suez,suez,13,16.72,59.3,110
